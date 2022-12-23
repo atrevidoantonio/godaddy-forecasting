@@ -23,9 +23,14 @@ library(seasonal)
 library(tigris)
 library(sf)
 
-df <- readr::read_csv("./data/train.csv")
-
-mutate(df, ymd(date))
+df <- readr::read_csv("./data/train.csv") %>%
+  transmute(row_id,
+            cfips,
+            county,
+            state,
+            date = ymd(first_day_of_month),
+            activity = microbusiness_density,
+            active)
 
 glimpse(df)
 
@@ -49,6 +54,7 @@ bea_cainc <- function(linecode = "10", bea_key = bea_key){
     #' Specify years
     "Year" = "2019, 2020, 2021"
   )
+  print("Passing payload to API...")
   #' Pass the payload to the API server to retrieve the data
   dataframe <- beaGet(payload, asWide = FALSE) %>%
     #' Initial cleanup of county FIPS and selection
@@ -56,9 +62,11 @@ bea_cainc <- function(linecode = "10", bea_key = bea_key){
               year = TimePeriod,
               code = Code,
               value = DataValue)
+  print("Data retrieved!")
   return(dataframe)
 }
 
+beaGet()
 bea_caemp <- function(linecode = "10", bea_key = bea_key){
   payload <- list(
     #' BEA API key
@@ -76,6 +84,7 @@ bea_caemp <- function(linecode = "10", bea_key = bea_key){
     #' Time period
     "Year" = "2019, 2020, 2021"
   )
+  print("Passing payload to API...")
   #' Pass the payload to the API server to retrieve the data
   dataframe <- beaGet(payload, asWide = FALSE) %>%
     #' Initial cleanup of county FIPS and selection
@@ -83,29 +92,37 @@ bea_caemp <- function(linecode = "10", bea_key = bea_key){
            year = TimePeriod,
            code = Code,
            value = DataValue)
+  print("Data retrieved!")
   return(dataframe)
 }
 
-bea_caemp500 <- bea_caemp(linecode = 500, bea_key)
-bea_caemp700 <- bea_caemp(linecode = 700, bea_key)
-bea_caemp1800 <- bea_caemp(linecode = 1800, bea_key)
-#' total population
-bea_pops <- bea_cainc(linecode = 100, bea_key)
-#' per-capita income
-bea_income <- bea_cainc(linecode = 110, bea_key)
-#' total employment
-bea_cainc_empl <- bea_cainc(linecode = 240, bea_key)
-#' wage and salary employees 
-bea_workers <- bea_cainc(linecode = 250, bea_key)
-#' total proprietors
-bea_props <- bea_cainc(linecode = 260, bea_key)
+vars <- c("400", "500", "700", "800", "900","1000","1100", "1200", "1800")
 
-beaCainc <-  rows_append(bea_pops, bea_income) %>%
-  rows_append(bea_cainc_empl) %>%
-  rows_append(bea_workers) %>%
-  rows_append(bea_props)
+beaCaemp <- NULL
+for (var in vars) {
+  print(paste("Retreiving data for linecode:", var))
+  beaCaemp <- rbind(beaCaemp, bea_caemp(var, bea_key))
+}
 
-beaCaemp <-  rows_append(bea_caemp500, bea_caemp700) %>%
-  rows_append(bea_caemp1800) %>%
-  rows_append(bea_workers) %>%
-  rows_append(bea_props)
+#' #' total population
+#' bea_pops <- bea_cainc(linecode = 100, bea_key)
+#' #' per-capita income
+#' bea_income <- bea_cainc(linecode = 110, bea_key)
+#' #' total employment
+#' bea_cainc_empl <- bea_cainc(linecode = 240, bea_key)
+#' #' wage and salary employees 
+#' bea_workers <- bea_cainc(linecode = 250, bea_key)
+#' #' total proprietors
+#' bea_props <- bea_cainc(linecode = 260, bea_key)
+#' 
+#' beaCainc <-  rows_append(bea_pops, bea_income) %>%
+#'   rows_append(bea_cainc_empl) %>%
+#'   rows_append(bea_workers) %>%
+#'   rows_append(bea_props)
+
+cainc_vars <- c("100", "110", "240", "250", "260")
+beaCainc <- NULL
+for (var in cainc_vars) {
+  print(paste("Retreiving data for linecode:", var))
+  beaCainc <- rbind(beaCainc, bea_cainc(var, bea_key))
+}
