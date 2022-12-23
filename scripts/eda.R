@@ -96,29 +96,12 @@ bea_caemp <- function(linecode = "10", bea_key = bea_key){
   return(dataframe)
 }
 
-vars <- c("400", "500", "700", "800", "900","1000","1100", "1200", "1800")
-
+caemp_vars <- c("400", "500", "700", "800", "900","1000","1100", "1200", "1800")
 beaCaemp <- NULL
-for (var in vars) {
+for (var in caemp_vars) {
   print(paste("Retreiving data for linecode:", var))
   beaCaemp <- rbind(beaCaemp, bea_caemp(var, bea_key))
 }
-
-#' #' total population
-#' bea_pops <- bea_cainc(linecode = 100, bea_key)
-#' #' per-capita income
-#' bea_income <- bea_cainc(linecode = 110, bea_key)
-#' #' total employment
-#' bea_cainc_empl <- bea_cainc(linecode = 240, bea_key)
-#' #' wage and salary employees 
-#' bea_workers <- bea_cainc(linecode = 250, bea_key)
-#' #' total proprietors
-#' bea_props <- bea_cainc(linecode = 260, bea_key)
-#' 
-#' beaCainc <-  rows_append(bea_pops, bea_income) %>%
-#'   rows_append(bea_cainc_empl) %>%
-#'   rows_append(bea_workers) %>%
-#'   rows_append(bea_props)
 
 cainc_vars <- c("100", "110", "240", "250", "260")
 beaCainc <- NULL
