@@ -385,7 +385,7 @@ lau <-
          period = gsub("M", "", period),
          value = as.numeric(value),
          #' Detach last character for variable code
-         series_code = stringi::stri_sub(series_id, -1, -1)) %>% 
+         series_code = stringi::stri_sub(series_id, -1, -1)) %>%
   #' For each series, provide its common use name
   mutate(date = paste(year, period, sep = "-"), 
          series = case_when(series_code == 3 ~ "Unemployment rate",
@@ -394,19 +394,23 @@ lau <-
                             series_code == 6 ~ "Labor force")) %>%
   select(cfips, date, year, month = period, series, value) %>%
   #' Remove aggregate
-  filter(period != "13")  %>%
+  filter(month != "13")  %>%
   mutate(date = ym(date))
-#' Pivot the lau dataframe to a wide format and clean up county fips codes for merging
+#' Pivot the LAU data frame to a wide format and clean up county FIPS codes for merging
 lau_wide <- pivot_wider(lau, names_from = series) %>%
   mutate(cfips = sub("^0+", "", cfips) %>% as.numeric) %>%
-  select(cfips, date, year, unem = `Unemployment rate`)
+  select(cfips, date, year, unem = `Unemployment rate`, uneml = `Unemployment (level)`, empl = `Employment`, labforce = `Labor force`)
+
+bea_table <- left_join(cainc_wide, caemp_wide) %>% mutate(cfips = as.numeric(cfips), year = as.numeric(year))
 
 #' Sanity check
-#' lau_fips <- distinct(lau, cfips) %>% mutate(cfips = sub("^0+", "", cfips) %>% as.numeric)
-#' bea_fips <- distinct(bea_table, cfips)
-#' train_fips <- distinct(df, cfips)            
+#lau_fips <- distinct(lau, cfips) %>% mutate(cfips = sub("^0+", "", cfips) %>% as.numeric) %>% mutate(lau = "LAU")
+#bea_fips <- distinct(bea_table, cfips) %>% mutate(bea = "BEA")
+#train_fips <- distinct(df, cfips, county, state)
 #' inner_join(lau_fips, train_fips)
-bea_table <- left_join(cainc_wide, caemp_wide) %>% mutate(cfips = as.numeric(cfips), year = as.numeric(year))
+#bea_fips <- left_join(bea_fips, lau_fips)
+#train_fips <- left_join(train_fips, bea_fips)
+#train_fips <- left_join(train_fips, lau_fips)
 
 train <- left_join(df, bea_table, by = c("cfips", "county", "year")) %>%
   mutate(year = as.numeric(year)) %>%
@@ -438,15 +442,24 @@ dickey_fuller_tests <- lapply(counties, unit_root_test) %>% plyr::ldply(tibble)
 kpss_tests <- lapply(counties, unit_root_test, test = "KPSS") %>% plyr::ldply(tibble)
 pp_tests <- lapply(counties, unit_root_test, test = "PP") %>% plyr::ldply(tibble)
 
-ggplot(train %>%
-         group_by(cfips, census_region, year) %>%
-         summarize(unem = mean(unem, na.rm = TRUE),
-                   population = max(population),
-                   activity = mean(activity)) %>%
-         ungroup(), 
-       aes(x =  unem/100, y = activity, size = population)) +
+ggplot(
+  train %>%
+    group_by(cfips, census_region, year) %>%
+    summarize(
+      unem = mean(unem, na.rm = TRUE),
+      population = max(population),
+      activity = mean(activity)
+    ) %>%
+    ungroup(),
+  aes(x =  unem / 100, y = activity, size = population)
+) +
   geom_jitter(color = sapphire) +
-  stat_smooth(method = "lm", linewidth = 0.75, color = raspberry, se = FALSE) +
+  stat_smooth(
+    method = "lm",
+    linewidth = 0.75,
+    color = raspberry,
+    se = FALSE
+  ) +
   scale_x_continuous(labels = percent_format(), guide = "axis_minor") +
   scale_y_continuous(guide = "axis_minor") +
   scale_size_continuous(
@@ -454,75 +467,118 @@ ggplot(train %>%
     labels = comma_format(),
     breaks = c(1e5, 1e6, 25e5, 5e6)
   ) +
-  guides(size = guide_legend(override.aes = list(color = sapphire, linetype = NA), nrow = 2)) +
+  guides(size = guide_legend(
+    override.aes = list(color = sapphire, linetype = NA),
+    nrow = 2
+  )) +
   theme_clean() +
   labs(x = "Unemployment rate", y = "Microbusiness Density", size = "Population") +
-  facet_wrap(~census_region, scales = "free")
-
-ggplot(train %>%
-         group_by(cfips, year) %>%
-         summarize(income = mean(income_per_capita, na.rm = TRUE),
-                   population = max(population),
-                   activity = mean(activity)), aes(x =  income, y = activity, size = population)) + 
-  geom_jitter(color = sapphire) +
-  theme_clean() +
-  scale_x_log10(labels = dollar_format(), guide = "axis_minor") +
-  scale_y_continuous(guide = "axis_minor") +
-  scale_size_continuous(
-    range = c(1, 5),
-    labels = comma_format(),
-    breaks = c(1e5, 1e6, 25e5, 5e6)
-  ) +
-  guides(size = guide_legend(override.aes = list(color = sapphire, linetype = NA), nrow = 2)) +
-  labs(x = "Income per-capita", y = "Microbusiness Density")
-
-ggplot(train %>%
-         group_by(cfips, census_region, year) %>%
-         summarize(income = mean(income_per_capita, na.rm = TRUE),
-                   population = max(population),
-                   activity = mean(activity)) %>%
-         ungroup(), 
-       aes(x =  income, y = activity, size = population)) + 
-  scale_x_log10(labels = dollar_format(), guide = "axis_minor") +
-  scale_y_continuous(guide = "axis_minor") +
-  scale_size_continuous(
-    range = c(1, 5),
-    labels = comma_format(),
-    breaks = c(1e5, 1e6, 25e5, 5e6)
-  ) +
-  geom_jitter(color = sapphire) +
-  stat_smooth(method = "lm", linewidth = 0.75, color = raspberry, se = FALSE) +
-  theme_clean() +
-  guides(size = guide_legend(override.aes = list(color = sapphire, linetype = NA), nrow = 2)) +
-  labs(x = "Income per-capita", y = "Microbusiness Density", size = "Population") +
-  facet_wrap(~census_region, scales = "free")
-
-ggplot(train %>%
-         group_by(cfips, census_region, year) %>%
-         summarize(manufacturing = mean(manufacturing/total_employment, na.rm = TRUE),
-                   population = max(population),
-                   activity = mean(activity)) %>%
-         ungroup(), 
-       aes(x =  manufacturing, y = activity, size = population)) +
-  geom_jitter(color = sapphire) +
-  stat_smooth(method = "lm", linewidth = 0.75, color = raspberry, se = FALSE) +
-  scale_x_continuous(labels = percent_format(), guide = "axis_minor") +
-  scale_y_continuous(guide = "axis_minor") +
-  scale_size_continuous(
-    range = c(1, 5),
-    labels = comma_format(),
-    breaks = c(1e5, 1e6, 25e5, 5e6)
-  ) +
-  guides(size = guide_legend(override.aes = list(color = sapphire, linetype = NA), nrow = 2)) +
-  theme_clean() +
-  labs(x = "Manufacturing", y = "Microbusiness Density", size = "Population") +
-  facet_wrap(~census_region, scales = "free")
+  facet_wrap( ~ census_region, scales = "free")
 
 ggplot(
   train %>%
-    filter(state %in% c("Washington", "Oregon", "California", "Idaho", "Texas", "New York", "North Carolina")),
-  aes(x =  date, y = activity, group = cfips)
+    group_by(cfips, year) %>%
+    summarize(
+      income = mean(income_per_capita, na.rm = TRUE),
+      population = max(population),
+      activity = mean(activity)
+    ),
+  aes(x =  income, y = activity, size = population)
 ) +
+  geom_jitter(color = sapphire) +
+  theme_clean() +
+  scale_x_log10(labels = dollar_format(), guide = "axis_minor") +
+  scale_y_continuous(guide = "axis_minor") +
+  scale_size_continuous(
+    range = c(1, 5),
+    labels = comma_format(),
+    breaks = c(1e5, 1e6, 25e5, 5e6)
+  ) +
+  guides(size = guide_legend(
+    override.aes = list(color = sapphire, linetype = NA),
+    nrow = 2
+  )) +
+  labs(x = "Income per-capita", y = "Microbusiness Density")
+
+ggplot(
+  train %>%
+    group_by(cfips, census_region, year) %>%
+    summarize(
+      income = mean(income_per_capita, na.rm = TRUE),
+      population = max(population),
+      activity = mean(activity)
+    ) %>%
+    ungroup(),
+  aes(x =  income, y = activity, size = population)
+) +
+  scale_x_log10(labels = dollar_format(), guide = "axis_minor") +
+  scale_y_continuous(guide = "axis_minor") +
+  scale_size_continuous(
+    range = c(1, 5),
+    labels = comma_format(),
+    breaks = c(1e5, 1e6, 25e5, 5e6)
+  ) +
+  geom_jitter(color = sapphire) +
+  stat_smooth(
+    method = "lm",
+    linewidth = 0.75,
+    color = raspberry,
+    se = FALSE
+  ) +
+  theme_clean() +
+  guides(size = guide_legend(
+    override.aes = list(color = sapphire, linetype = NA),
+    nrow = 2
+  )) +
+  labs(x = "Income per-capita", y = "Microbusiness Density", size = "Population") +
+  facet_wrap( ~ census_region, scales = "free")
+
+ggplot(
+  train %>%
+    group_by(cfips, census_region, year) %>%
+    summarize(
+      manufacturing = mean(manufacturing / total_employment, na.rm = TRUE),
+      population = max(population),
+      activity = mean(activity)
+    ) %>%
+    ungroup(),
+  aes(x =  manufacturing, y = activity, size = population)
+) +
+  geom_jitter(color = sapphire) +
+  stat_smooth(
+    method = "lm",
+    linewidth = 0.75,
+    color = raspberry,
+    se = FALSE
+  ) +
+  scale_x_continuous(labels = percent_format(), guide = "axis_minor") +
+  scale_y_continuous(guide = "axis_minor") +
+  scale_size_continuous(
+    range = c(1, 5),
+    labels = comma_format(),
+    breaks = c(1e5, 1e6, 25e5, 5e6)
+  ) +
+  guides(size = guide_legend(
+    override.aes = list(color = sapphire, linetype = NA),
+    nrow = 2
+  )) +
+  theme_clean() +
+  labs(x = "Manufacturing", y = "Microbusiness Density", size = "Population") +
+  facet_wrap( ~ census_region, scales = "free")
+
+ggplot(train %>%
+         filter(
+           state %in% c(
+             "Washington",
+             "Oregon",
+             "California",
+             "Idaho",
+             "Texas",
+             "New York",
+             "North Carolina"
+           )
+         ),
+       aes(x =  date, y = activity, group = cfips)) +
   geom_line(color = sapphire) +
-  facet_wrap( ~ census_region, scales = "free") +
+  facet_wrap(~ census_region, scales = "free") +
   theme_clean()
