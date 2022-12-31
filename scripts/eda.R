@@ -2,6 +2,7 @@
 library(dplyr)
 library(tidyverse)
 library(ggplot2)
+library(RColorBrewer)
 library(ggthemes)
 library(ggpubr)
 library(ggsci)
@@ -12,17 +13,16 @@ library(ggdist)
 library(lubridate)
 library(ggh4x)
 library(hrbrthemes)
-library(fredr)
-library(bea.R)
 library(tsibble)
 library(fable)
 library(fabletools)
 library(fable.prophet)
 library(feasts)
 library(seasonal)
+library(zoo)
 library(tigris)
 library(sf)
-
+sf::sf_use_s2(use_s2 = FALSE)
 ##### Helper Functions #####
 
 unit_root_test <- function(tbl, test = "ADF") {
@@ -31,12 +31,12 @@ unit_root_test <- function(tbl, test = "ADF") {
   #' and Phillips-Peron tests. Please note that for the KPSS test 
   #' the presence of a unit root is not the null hypothesis but the alternative.
   if (test == "ADF") {
-    result = adf.test(tbl$congested_sites)
+    result = tseries::adf.test(tbl$activity)
     result = tidy(result)
     return(result)
   }
   else if (test == "KPSS") {
-    result = unitroot_kpss(tbl$congested_sites)
+    result = feasts::unitroot_kpss(tbl$activity)
     result = tidy(result) %>% 
       pivot_wider(names_from = names, values_from = x) %>% 
       rename(statistic = kpss_stat, p.value = kpss_pvalue) %>% 
@@ -45,7 +45,7 @@ unit_root_test <- function(tbl, test = "ADF") {
     return(result)
   }
   else if (test == "PP") {
-    result = unitroot_pp(tbl$congested_sites)
+    result = feasts::unitroot_pp(tbl$activity)
     result = tidy(result) %>%
       pivot_wider(names_from = names, values_from = x) %>% 
       rename(statistic = pp_stat, p.value = pp_pvalue) %>% 
@@ -71,7 +71,7 @@ theme_clean <- function(...) {
       axis.line = element_line(linewidth = 0.15, colour = onyx),
       legend.title = element_text(size = 10, face = "plain"),
       legend.key = element_rect(fill = NA, color = NA),
-      text = element_text(color = onyx),
+      text = element_text(color = onyx, family = "Roboto Condensed"),
       strip.background = element_rect(fill = "transparent", color = NA),
       plot.background = element_rect(fill = "transparent", color = NA),
       axis.ticks.length = unit(0.5, "cm"),
@@ -96,16 +96,25 @@ theme_grid <- function(...) {
 }
 
 sapphire <- "#255F85"
+prussian <- "#293E66"
 rainy_day <- "#474C5c"
-raspberry <- "#DB2955"
+glossy_grape <- "#A799B7"
+raspberry <- "#C33149"
+dark_violet <- "#351C45"
+satin <- "#D65C70"
 onyx <- "#383C42"
+rhythm <- "#6E758E"
+gainsboro <- "#D8D8D8"
+metallic <- "#837A75"
 slate <- "#3f3f3f"
 charcoal <- "#2E4057"
+claret <- "#8B1E3F"
 dark_magenta <- "#861B54"
+eton <- "#739F8F"
 dark_emerald <- "#2d6d66"
 ##### DATA #####
 
-train <- read_csv("./data/enriched_train.csv")
+train <- read_csv("./data/processed/enriched_train.csv")
 
 ts <-  mutate(train, ym = yearmonth(date)) %>%
   as_tsibble(key = cfips, index = ym) %>%
@@ -124,14 +133,153 @@ ts %>% PACF(activity) %>% autoplot() +
 #' convert to list for easy implementation of unit root tests
 counties <-
   train %>% 
-  group_split(cfips, county)
+  group_split(cfips)
+county_names <- distinct(train, county, state) %>%
+  transmute(county = paste(county, state, sep = " "))
+county_names <- unique(county_names$county)
 #' name the elements of the list
-sort(unique(counties$cfips)) -> county_names
 names(counties) <- county_names
+#sort(unique(counties$cfips)) -> county_names
 #' perform tests at the county level
 dickey_fuller_tests <- lapply(counties, unit_root_test) %>% plyr::ldply(tibble)
 kpss_tests <- lapply(counties, unit_root_test, test = "KPSS") %>% plyr::ldply(tibble)
 pp_tests <- lapply(counties, unit_root_test, test = "PP") %>% plyr::ldply(tibble)
+
+#' generate state total microbusiness firms and relative shares
+train <- train %>%
+  group_by(state, year) %>%
+  mutate(state_firms = sum(active)) %>%
+  ungroup() %>%
+  mutate(share = active/state_firms)
+#' standardize and normalize activity
+train <- train %>%
+  group_by(date) %>%
+  mutate(
+    density_z = (activity - mean(activity)) / sd(activity),
+    density_scaled = (activity - min(activity)) / (min(activity) + max(activity))
+  ) %>%
+  ungroup()
+
+cbsa_density <-
+  read_csv("./data/processed/cbsa_density.csv") %>% group_by(date) %>%
+  mutate(
+    density_z = (activity - mean(activity)) / sd(activity),
+    density_scaled = (activity - min(activity)) / (min(activity) + max(activity))
+  ) %>%
+  ungroup()
+
+###### Spatial data #####
+fips_codes <- tigris::fips_codes %>%
+  mutate(cfips = paste(state_code, county_code, sep = "") %>% sub("^0+", "", .) %>% as.numeric(.)) %>%
+  transmute(cfips,
+            sfips = state_code,
+            state = state_name)
+
+cbsa_sf <- tigris::core_based_statistical_areas() %>% janitor::clean_names()
+
+cbsa_sf <- transmute(cbsa_sf,
+                     cbsa_code = cbsafp,
+                     cbsa = name,
+                     lat = as.numeric(intptlat),
+                     lon = as.numeric(intptlon))
+
+counties_sf <- tigris::counties() %>% janitor::clean_names() %>%
+  transmute(cfips = geoid,
+            sfips = statefp,
+            county = name,
+            aland,
+            awater,
+            lat = as.numeric(intptlat),
+            lon = as.numeric(intptlon)) %>%
+  mutate(cfips = sub("^0+", "", cfips) %>% as.numeric(.)) %>%
+  left_join(fips_codes)
+
+states_sf <- tigris::states() %>% filter(!STATEFP %in% c("02", "15", "60", "66", "69", "72", "78"))
+
+alaska <- tigris::states() %>% filter(STATEFP == "02") %>% erase_water()
+hawaii <- tigris::states() %>% filter(STATEFP == "15") %>% erase_water()
+
+con_cbsa_sf <- cbsa_sf %>%
+  filter(
+    !cbsa_code %in% c(
+      "10380",
+      "11640",
+      "11260",
+      "17620",
+      "17640",
+      "21820",
+      "25020",
+      "25900",
+      "27580",
+      "27940",
+      "27980",
+      "28180",
+      "28540",
+      "32420",
+      "38660",
+      "41980",
+      "41900",
+      "42180",
+      "46520",
+      "49500"
+    )
+  ) %>%
+  mutate(cbsa_code = as.numeric(cbsa_code))
+#' join to contingous CBSAs
+
+cbsa_density <- left_join(cbsa_density, con_cbsa_sf) %>% arrange(cbsa_code, date) %>%
+  mutate(year = year(date))
+#' join to counties 
+county_sf <- left_join(train, counties_sf)
+
+#' add water features to map
+#' focus on Pacific areas for a closer look
+pacific_sf <- filter(con_cbsa_sf, year == 2021, census_region == "Pacific")
+#' convert to list
+pacific_sf <- group_split(pacific_sf, cbsa_code)
+#' erase water
+pacific_sf <- lapply(pacific_sf, erase_water)
+pacific_sf <- plyr::ldply(pacific_sf, as_tibble)
+
+#' Same as above but at county level
+pacific_counties <- filter(counties_sf, state %in% c("California", "Oregon", "Washington"))
+pacific_counties <- group_split(pacific_counties, cfips)
+pacific_counties <- lapply(pacific_counties, erase_water)
+pacific_counties <- plyr::ldply(pacific_counties, as_tibble)
+
+#' create a county level data frame for contiguous Pacific states 
+pacific <- filter(train, state %in% c("California", "Oregon", "Washington")) %>%
+  left_join(pacific_counties)
+
+gc()
+
+#### Plots ######
+
+#' kernel density estimation
+ggplot(train, aes(x = activity, linetype = as.factor(year), color = as.factor(year))) +
+  stat_density(geom = "line", position = "identity") +
+  scale_x_log10(guide = "axis_minor") +
+  scale_y_continuous(guide = "axis_minor") +
+  theme_clean() +
+  guides(color = "none") +
+  scale_color_manual(values = c(onyx, rhythm, gainsboro, metallic)) +
+  labs(x = "\nMircobusiness activity (per 100)", y = "Density\n", linetype = "")
+
+ggplot(train, aes(x = share, linetype = as.factor(year), color = as.factor(year))) +
+  stat_density(geom = "line") +
+  theme_clean() +
+  guides(color = "none") +
+  scale_color_manual(values = c(onyx, rhythm, gainsboro, metallic)) +
+  labs(x = "\nMircobusiness activity (share of state total)", y = "Density\n", linetype = "", color = "")
+
+ggplot(train, aes(x = active, linetype = as.factor(year), color = as.factor(year))) +
+  stat_density(geom = "line", position = "identity") +
+  scale_x_log10(guide = "axis_minor", labels = comma_format()) +
+  scale_y_continuous(guide = "axis_minor") +
+  theme_clean() +
+  guides(color = "none") +
+  scale_color_manual(values = c(onyx, rhythm, gainsboro, metallic)) +
+  labs(x = "\nMircobusiness activity (count active firms)", y = "Density\n", linetype = "")
 
 ggplot(
   train %>%
@@ -148,7 +296,7 @@ ggplot(
   stat_smooth(
     method = "lm",
     linewidth = 0.75,
-    color = raspberry,
+    color = satin,
     se = FALSE
   ) +
   scale_x_continuous(labels = percent_format(), guide = "axis_minor") +
@@ -168,31 +316,6 @@ ggplot(
 
 ggplot(
   train %>%
-    group_by(cfips, year) %>%
-    summarize(
-      income = mean(income_per_capita, na.rm = TRUE),
-      population = max(population),
-      activity = mean(activity)
-    ),
-  aes(x =  income, y = activity, size = population)
-) +
-  geom_jitter(color = sapphire) +
-  theme_clean() +
-  scale_x_log10(labels = dollar_format(), guide = "axis_minor") +
-  scale_y_continuous(guide = "axis_minor") +
-  scale_size_continuous(
-    range = c(1, 5),
-    labels = comma_format(),
-    breaks = c(1e5, 1e6, 25e5, 5e6)
-  ) +
-  guides(size = guide_legend(
-    override.aes = list(color = sapphire, linetype = NA),
-    nrow = 2
-  )) +
-  labs(x = "Income per-capita", y = "Microbusiness Density")
-
-ggplot(
-  train %>%
     group_by(cfips, census_region, year) %>%
     summarize(
       income = mean(income_per_capita, na.rm = TRUE),
@@ -221,7 +344,7 @@ ggplot(
     override.aes = list(color = sapphire, linetype = NA),
     nrow = 2
   )) +
-  labs(x = "Income per-capita", y = "Microbusiness Density", size = "Population") +
+  labs(x = "\nIncome per-capita", y = "Microbusiness Density\n", size = "Population") +
   facet_wrap( ~ census_region, scales = "free")
 
 ggplot(
@@ -273,3 +396,27 @@ ggplot(train %>%
   geom_line(color = sapphire) +
   facet_wrap(~ census_region, scales = "free") +
   theme_clean()
+
+ggplot(con_cbsa_sf %>% filter(year == 2021)) +
+  geom_sf(data = states_sf, fill = gainsboro) +
+  geom_sf(aes(fill = log(activity))) +
+  scale_fill_gradient(low = prussian,  high = "#3C153B") +
+  theme_void()
+
+
+# ggplot(con_cbsa_sf %>% filter(year == 2021, census_region == "Pacific")) +
+#   geom_sf(data = states_sf %>% filter(NAME %in% c("Washington", "Oregon", "California")), fill = "gray90") +
+#   geom_sf(aes(fill = activity)) +
+#   scale_fill_distiller(palette = "PuBu") +
+#   theme_void()
+
+ggplot(pacific_sf %>% filter(year == 2021), aes(geometry = geometry)) +
+  geom_sf(data = states_sf %>% filter(NAME %in% c("Washington", "Oregon", "California")), fill = "gray90") +
+  geom_sf(aes(fill = activity)) +
+  scale_fill_distiller(palette = "PuBu") +
+  theme_void()
+
+ggplot(pacific %>% filter(year == 2021), aes(geometry = geometry)) +
+  geom_sf(aes(fill = activity)) +
+  scale_fill_distiller(palette = "PuBu") +
+  theme_void()

@@ -105,6 +105,10 @@ bea_gdp <- function(linecode = "1", bea_key = bea_key){
   return(dataframe)
 }
 
+st_crosswalk <- tibble(state = state.name) %>%
+  bind_cols(tibble(abb = state.abb)) %>% 
+  bind_rows(tibble(state = "District of Columbia", abb = "DC"))
+
 #' Census Regions https://www2.census.gov/geo/pdfs/maps-data/maps/reference/us_regdiv.pdf
 states <- read.table(
   textConnection(
@@ -178,8 +182,6 @@ train <- readr::read_csv("./data/train.csv") %>%
             activity = microbusiness_density,
             active) %>%
   left_join(states)
-
-glimpse(train)
 
 #' Provide a list of linecodes (variables) for data retrieval
 caemp_vars <- c("90", "400", "500", "700", "800", "900", "1000", "1100", "1200", "1800")
@@ -342,6 +344,29 @@ enriched_train <- left_join(enriched_train, cbsas) %>%
 
 enriched_train <- enriched_train %>% group_by(cfips) %>% fill(population)
 
+#' might be better to retrieve the CBSA population for Micro and Metro areas
+#' from the BEA API or Census API
+cbsa_pop <- read_csv("./data/cbsa_pop.csv") %>%
+  mutate(cbsa = stringr::str_replace(cbsa, "\\*", "") %>% trimws(.)) %>%
+  pivot_longer(cols = 3:5,
+               values_to = "population",
+               names_to = "year") %>%
+  mutate(year = stringr::str_replace(year, "population_", "") %>% as.numeric(.))
+
+cbsa_density <-
+  train %>%
+  group_by(cbsa_code, cbsa, date, year) %>%
+  summarize(active = sum(active)) %>%
+  left_join(cbsa_pop) %>%
+  group_by(cbsa_code, cbsa) %>%
+  fill(population) %>%
+  mutate(abb = sub("^[^,]*,", '', cbsa) %>% sub("(^[^-]+)-.*", "\\1", .) %>% trimws(.)) %>%
+  filter(!is.na(cbsa_code)) %>%
+  left_join(st_crosswalk) %>%
+  select(-abb) %>%
+  left_join(states) %>%
+  mutate(activity = active/population*100) %>%
+  arrange(cbsa_code, date)
 
 #' Sanity check
 #lau_fips <- distinct(lau, cfips) %>% mutate(cfips = sub("^0+", "", cfips) %>% as.numeric) %>% mutate(lau = "LAU")
@@ -357,3 +382,4 @@ to_csv(enriched_train)
 to_csv(lau_wide)
 to_csv(bea_table)
 to_csv(cbsas)
+to_csv(cbsa_density)
