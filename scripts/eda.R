@@ -105,6 +105,7 @@ satin <- "#D65C70"
 onyx <- "#383C42"
 rhythm <- "#6E758E"
 gainsboro <- "#D8D8D8"
+persian_orange <- "#DC965A"
 metallic <- "#837A75"
 slate <- "#3f3f3f"
 charcoal <- "#2E4057"
@@ -255,23 +256,42 @@ gc()
 
 #### Plots ######
 
+plot_kde <- function(data, x, log_scale = FALSE, group = TRUE, percent = FALSE) {
+  # Set the x-axis label based on the x variable
+  x_labels <- c(activity = "Mircobusiness activity (per 100)",
+                active = "Active Microbusinesses",
+                share = "Mircobusiness activity (share of state total)")
+  x_label <- x_labels[x_var]
+  p <- ggplot(data, aes(x = !!sym(x_var))) + theme_clean() + labs(x = x_label, y = "Density\n")
+  if (group) {
+    p <- ggplot(data, aes(x = x, linetype = as.factor(year))) +
+      stat_density(geom = "line",
+                   position = "identity",
+                   color = "black") +
+      theme_clean() +
+      guides(color = "none") +
+      labs(x = x_label, y = "Density\n", linetype = "")
+  }
+  # Format the x axis as a percentage if specified
+  if (percent) {
+    p <- p + scale_x_continuous(guide = "axis_minor", labels = percent_format())
+  } else {
+    p <- p + scale_x_continuous(guide = "axis_minor", labels = comma_format())
+  }
+  # Add a log scale for the x axis if specified
+  if (log_scale) {
+    p <- p + scale_x_log10(guide = "axis_minor", labels = comma_format())
+  }
+  # Return the plot
+  return(p)
+}
 #' kernel density estimation
-ggplot(train, aes(x = activity, linetype = as.factor(year), color = as.factor(year))) +
-  stat_density(geom = "line", position = "identity") +
-  scale_x_log10(guide = "axis_minor") +
-  scale_y_continuous(guide = "axis_minor") +
-  theme_clean() +
-  guides(color = "none") +
-  scale_color_manual(values = c(onyx, rhythm, gainsboro, metallic)) +
-  labs(x = "\nMircobusiness activity (per 100)", y = "Density\n", linetype = "")
 
-ggplot(train, aes(x = share, linetype = as.factor(year), color = as.factor(year))) +
-  stat_density(geom = "line") +
-  theme_clean() +
-  guides(color = "none") +
-  scale_color_manual(values = c(onyx, rhythm, gainsboro, metallic)) +
-  labs(x = "\nMircobusiness activity (share of state total)", y = "Density\n", linetype = "", color = "")
+plot_kde(train, x = train$active, group = TRUE, log_scale = TRUE)
+plot_kde(train, train$activity, log_scale = TRUE)
+plot_kde(train, train$share, percent = TRUE)
 
+#' How does this look across regions
 ggplot(train, aes(x = active, linetype = as.factor(year), color = as.factor(year))) +
   stat_density(geom = "line", position = "identity") +
   scale_x_log10(guide = "axis_minor", labels = comma_format()) +
@@ -279,7 +299,36 @@ ggplot(train, aes(x = active, linetype = as.factor(year), color = as.factor(year
   theme_clean() +
   guides(color = "none") +
   scale_color_manual(values = c(onyx, rhythm, gainsboro, metallic)) +
-  labs(x = "\nMircobusiness activity (count active firms)", y = "Density\n", linetype = "")
+  # guides(color = "none", linetype = guide_legend(
+  # override.aes = list(color = c(sapphire, rainy_day, persian_orange, eton)))) +
+  # scale_color_manual(values = c(sapphire, rainy_day, persian_orange, eton)) +
+  labs(x = "\nMircobusiness activity (count active firms)", y = "Density\n", linetype = "") +
+  facet_wrap(~census_region)
+
+#' How does this look across regions
+ggplot(train, aes(x = activity, linetype = as.factor(year), color = as.factor(year))) +
+  stat_density(geom = "line", position = "identity") +
+  scale_x_log10(guide = "axis_minor", labels = comma_format()) +
+  scale_y_continuous(guide = "axis_minor") +
+  theme_clean() +
+  guides(color = "none") +
+  # guides(color = "none", linetype = guide_legend(
+  # override.aes = list(color = c(sapphire, rainy_day, persian_orange, eton)))) +
+  scale_color_manual(values = c(onyx, rhythm, gainsboro, metallic)) +
+#  scale_color_manual(values = c(sapphire, rainy_day, persian_orange, eton)) +
+  labs(x = "\nMircobusiness activity (count active firms)", y = "Density\n", linetype = "", color = "") +
+  facet_wrap(~census_region)
+
+#' How does this look across regions
+ggplot(train, aes(x = activity, linetype = as.factor(year), color = as.factor(year))) +
+  stat_density(geom = "line", position = "identity") +
+  scale_x_log10(guide = "axis_minor", labels = comma_format()) +
+  scale_y_continuous(guide = "axis_minor") +
+  theme_clean() +
+  guides(color = "none") +
+  scale_color_manual(values = c(onyx, rhythm, gainsboro, metallic)) +
+  labs(x = "\nMircobusiness activity (count active firms)", y = "Density\n", linetype = "") +
+  facet_wrap(~census_region)
 
 ggplot(
   train %>%
@@ -378,6 +427,139 @@ ggplot(
   )) +
   theme_clean() +
   labs(x = "Manufacturing", y = "Microbusiness Density", size = "Population") +
+  facet_wrap( ~ census_region, scales = "free")
+
+ggplot(
+  train %>%
+    group_by(cfips, census_region, year) %>%
+    summarize(
+      college = mean(pct_college, na.rm = TRUE),
+      population = max(population),
+      activity = mean(activity)
+    ) %>%
+    ungroup(),
+  aes(x =  college, y = activity, size = population)
+) +
+  geom_jitter(color = sapphire) +
+  stat_smooth(
+    method = "lm",
+    linewidth = 0.75,
+    color = raspberry,
+    se = FALSE
+  ) +
+  scale_x_continuous(labels = percent_format(), guide = "axis_minor") +
+  scale_y_continuous(guide = "axis_minor") +
+  scale_size_continuous(
+    range = c(1, 5),
+    labels = comma_format(),
+    breaks = c(1e5, 1e6, 25e5, 5e6)
+  ) +
+  guides(size = guide_legend(
+    override.aes = list(color = sapphire, linetype = NA),
+    nrow = 2
+  )) +
+  theme_clean() +
+  labs(x = "College educated population", y = "Microbusiness Density", size = "Population") +
+  facet_wrap( ~ census_region, scales = "free")
+
+ggplot(
+  train %>%
+    group_by(cfips, census_region, year) %>%
+    summarize(
+      for_born = mean(pct_foreign_born, na.rm = TRUE),
+      population = max(population),
+      activity = mean(activity)
+    ) %>%
+    ungroup(),
+  aes(x =  for_born, y = activity, size = population)
+) +
+  geom_jitter(color = sapphire) +
+  stat_smooth(
+    method = "lm",
+    linewidth = 0.75,
+    color = raspberry,
+    se = FALSE
+  ) +
+  scale_x_continuous(labels = percent_format(), guide = "axis_minor") +
+  scale_y_continuous(guide = "axis_minor") +
+  scale_size_continuous(
+    range = c(1, 5),
+    labels = comma_format(),
+    breaks = c(1e5, 1e6, 25e5, 5e6)
+  ) +
+  guides(size = guide_legend(
+    override.aes = list(color = sapphire, linetype = NA),
+    nrow = 2
+  )) +
+  theme_clean() +
+  labs(x = "Immigrant population", y = "Microbusiness Density", size = "Population") +
+  facet_wrap( ~ census_region, scales = "free")
+
+
+ggplot(
+  train %>%
+    group_by(cfips, census_region, year) %>%
+    summarize(
+      pct_bb = mean(pct_bb, na.rm = TRUE),
+      population = max(population),
+      activity = mean(activity)
+    ) %>%
+    ungroup(),
+  aes(x =  pct_bb, y = activity, size = population)
+) +
+  geom_jitter(color = sapphire) +
+  stat_smooth(
+    method = "lm",
+    linewidth = 0.75,
+    color = raspberry,
+    se = FALSE
+  ) +
+  scale_x_continuous(labels = percent_format(), guide = "axis_minor") +
+  scale_y_continuous(guide = "axis_minor") +
+  scale_size_continuous(
+    range = c(1, 5),
+    labels = comma_format(),
+    breaks = c(1e5, 1e6, 25e5, 5e6)
+  ) +
+  guides(size = guide_legend(
+    override.aes = list(color = sapphire, linetype = NA),
+    nrow = 2
+  )) +
+  theme_clean() +
+  labs(x = "Population with Internet access", y = "Microbusiness Density", size = "Population") +
+  facet_wrap( ~ census_region, scales = "free")
+
+ggplot(
+  train %>%
+    group_by(cfips, census_region, year) %>%
+    summarize(
+      median_hh_inc = mean(median_hh_inc, na.rm = TRUE),
+      population = max(population),
+      activity = mean(activity)
+    ) %>%
+    ungroup(),
+  aes(x =  median_hh_inc, y = activity, size = population)
+) +
+  geom_jitter(color = sapphire) +
+  stat_smooth(
+    method = "lm",
+    linewidth = 0.75,
+    color = raspberry,
+    se = FALSE
+  ) +
+  scale_x_continuous(labels = dollar_format(), guide = "axis_minor") +
+  scale_y_continuous(guide = "axis_minor") +
+  scale_size_continuous(
+    range = c(1, 5),
+    labels = comma_format(),
+    breaks = c(1e5, 1e6, 25e5, 5e6)
+  ) +
+  guides(size = guide_legend(
+    override.aes = list(color = sapphire, linetype = NA),
+    nrow = 2
+  )) +
+  theme_clean() +
+  labs(x = "Median household income", y = "Microbusiness Density", size = "Population") +
   facet_wrap( ~ census_region, scales = "free")
 
 ggplot(train %>%

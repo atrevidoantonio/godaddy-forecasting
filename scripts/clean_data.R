@@ -6,8 +6,25 @@ library(bea.R)
 #' set API keys
 bea_key <- "78B3F189-18EA-4FA7-9F24-06FE9640FA87"
 
+input_data <- "./data/"
+processed_data <- "./data/processed/"
 
-#' save dataframe objects to CSV
+load_data <- function(dataframe, input_data) {
+  if (input_data) {
+    # Load the data from the input data path
+    data <- readr::read_csv(paste0(input_data, dataframe, ".csv"))
+  } else {
+    # Load the data from the processed data path
+    data <-
+      readr::read_csv(paste0(processed_data, dataframe, ".csv"))
+  }
+  if (is.null(data)) {
+    stop(paste("Error: Could not find file ", file_path))
+  }
+  return(data)
+}
+
+#' save data frame objects to CSV
 to_csv <- function(df, path = "./data/processed/") {
   name <- deparse(substitute(df))
   readr::write_csv(df, paste0(path, name, ".csv")) 
@@ -315,9 +332,23 @@ lau_wide <- pivot_wider(lau, names_from = series) %>%
 
 bea_table <- left_join(cainc_wide, caemp_wide) %>% mutate(cfips = as.numeric(cfips), year = as.numeric(year))
 
+census_df <- read_csv("./data/census_starter.csv") %>% relocate(cfips) %>%
+  #' change from wide to long
+  gather(name, percent, -cfips) %>%
+  #' remove underscores to extract variable name and year
+  mutate(year = str_extract(name, "(?<=_)[^_]*$") %>% as.numeric(.),
+         name = sub("_[^_]+$", "", name)) %>%
+  #' change back to wide
+  spread(name, percent) %>%
+  #' convert percent values to actual decimal
+  mutate(across(starts_with("pct_"), ~ .x/100))
+
+#' join data together
 enriched_train <- left_join(train, bea_table, by = c("cfips", "county", "year")) %>%
   mutate(year = as.numeric(year)) %>%
-  left_join(lau_wide)
+  left_join(lau_wide) %>%
+  left_join(census_df)
+
 #' load in CBSA areas from Census Bureau
 cbsa_codes <-
   read_csv("./data/cbsa_codes.csv") %>% janitor::clean_names() %>%
@@ -334,6 +365,7 @@ cbsa_codes <-
 counties <- distinct(train, cfips)
 cbsas <- inner_join(cbsa_codes, counties)
 
+#' enrich the training data frame wtih CBSAs
 enriched_train <- left_join(enriched_train, cbsas) %>%
   relocate(census_region, .after = state) %>%
   relocate(cbsa_code, .after = cfips) %>%
@@ -341,8 +373,17 @@ enriched_train <- left_join(enriched_train, cbsas) %>%
   relocate(cbsa_type, .after = census_region) %>%
   mutate(cbsa_type = if_else(is.na(cbsa_type), "Unattached County", as.character(cbsa_type)),
          cbsa = if_else(is.na(cbsa), "Unattached", as.character(cbsa)))
-
-enriched_train <- enriched_train %>% group_by(cfips) %>% fill(population)
+#' fill in missing data
+enriched_train <-
+  enriched_train %>% group_by(cfips) %>% fill(c(
+    population,
+    median_hh_inc,
+    pct_bb,
+    pct_college,
+    pct_foreign_born,
+    pct_it_workers
+  ),
+  .direction = "down")
 
 #' might be better to retrieve the CBSA population for Micro and Metro areas
 #' from the BEA API or Census API
@@ -383,3 +424,4 @@ to_csv(lau_wide)
 to_csv(bea_table)
 to_csv(cbsas)
 to_csv(cbsa_density)
+to_csv(census_df)
