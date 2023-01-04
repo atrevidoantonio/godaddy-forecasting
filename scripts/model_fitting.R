@@ -20,7 +20,9 @@ library(fabletools)
 library(fable.prophet)
 library(feasts)
 library(seasonal)
+library(future.apply)
 library(zoo)
+library(forecast)
 
 ##### Helper Functions #####
 
@@ -129,6 +131,11 @@ plan(multisession)
 
 tslm_fit <- ts %>%  model(tslm = TSLM(activity ~ trend() + season()))
 ets_fit <- ts %>%  model(ets = ETS(activity ~ trend()))
+arima_fit <- ts %>% model(arima = ARIMA(activity))
+
+#PCA
+xreg <- train %>% select(activity:pct_it_workers)
+pca <- xreg %>% na.omit() %>% prcomp(xreg)
 
 #' fable ensemble forecasting
 fit <- ts %>%
@@ -154,6 +161,13 @@ ets_fit %>%
   left_join(ground_truth) %>%
   yardstick::metrics(activity, .fitted)
 
+arima_fit %>%
+  fitted() %>%
+  as_tibble() %>%
+  left_join(ground_truth) %>%
+  yardstick::metrics(activity, .fitted)
+
+
 tslm_train_fit <-
   tslm_fit %>%
   fitted() %>%
@@ -166,10 +180,18 @@ ets_train_fit <-
   as_tibble() %>%
   left_join(ground_truth)
 
+arima_train_fit <- 
+  arima_fit %>%
+  fitted() %>%
+  as_tibble() %>%
+  left_join(ground_truth)
+
 Metrics::smape(ets_train_fit$activity, ets_train_fit$.fitted)
 Metrics::smape(tslm_train_fit$activity, tslm_train_fit$.fitted)
 
-arima_fit <- ts %>% model(arima = ARIMA(activity, stepwise = FALSE, approximation = FALSE))
+
+
+Metrics::smape(arima_train_fit$activity, arima_train_fit$.fitted)
 
 stl_dcmp <- ts %>%
   model(STL(
@@ -178,3 +200,4 @@ stl_dcmp <- ts %>%
     robust = TRUE)
   ) %>%
   components()
+model
