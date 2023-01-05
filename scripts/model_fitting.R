@@ -20,7 +20,9 @@ library(fabletools)
 library(fable.prophet)
 library(feasts)
 library(seasonal)
+library(future.apply)
 library(zoo)
+library(forecast)
 
 ##### Helper Functions #####
 
@@ -203,6 +205,11 @@ theta_fit <- train_sample %>% model(theta = THETA(activity ~ season(period  = 12
 tslm_forecasts <- get_forecasts(tslm_fit, h = 8)
 ets_forecasts <- get_forecasts(ets_fit, h = 8)
 theta_forecasts <- get_forecasts(theta_fit, h = 8)
+arima_fit <- ts %>% model(arima = ARIMA(activity))
+
+#PCA
+xreg <- train %>% select(activity:pct_it_workers)
+pca <- xreg %>% na.omit() %>% prcomp(xreg)
 
 #' Fable ensemble forecasting
 fit <- train %>%
@@ -226,6 +233,13 @@ ets_fit %>%
   as_tibble() %>%
   left_join(ground_truth) %>%
   yardstick::metrics(activity, .fitted)
+
+arima_fit %>%
+  fitted() %>%
+  as_tibble() %>%
+  left_join(ground_truth) %>%
+  yardstick::metrics(activity, .fitted)
+
 
 theta_fit %>%
   fitted() %>%
@@ -262,9 +276,50 @@ ets_model <- combine_model_fits(ets_fit, ets_forecasts)
 tslm_model <- combine_model_fits(tslm_fit, tslm_forecasts)
 theta_model <- combine_model_fits(theta_fit, theta_forecasts)
 
+arima_train_fit <- 
+  arima_fit %>%
+  fitted() %>%
+  as_tibble() %>%
+  select(-.model) %>%
+  left_join(ground_truth) %>%
+  mutate(fit = "Training")
+
+
+ets_test_fit <-
+  ets_forecasts %>%
+  select(cfips, state, census_region, .mean, `95_lower`, `95_upper`) %>%
+  rename(.fitted = .mean) %>%
+  as_tibble() %>%
+  relocate(ym, .after = census_region) %>%
+  left_join(test_sample) %>%
+  filter(!is.na(activity)) %>%
+  mutate(fit = "Test")
+
+ets_model <- combine_model_fits(ets_fit, ets_forecasts)
+tslm_model <- combine_model_fits(tslm_fit, tslm_forecasts)
+theta_model <- combine_model_fits(theta_fit, theta_forecasts)
+
+arima_train_fit <- 
+  arima_fit %>%
+  fitted() %>%
+  as_tibble() %>%
+  left_join(ground_truth)
+
 Metrics::smape(ets_train_fit$activity, ets_train_fit$.fitted)
 Metrics::smape(tslm_train_fit$activity, tslm_train_fit$.fitted)
 
+
+
+Metrics::smape(arima_train_fit$activity, arima_train_fit$.fitted)
+
+stl_dcmp <- ts %>%
+  model(STL(
+    activity ~ trend(window = 21) +
+      season(window = "periodic"),
+    robust = TRUE)
+  ) %>%
+  components()
+model
 Metrics::smape(ets_test_fit$activity, ets_test_fit$.fitted)
 yardstick::metrics(ets_test_fit, activity, fct)
 
