@@ -58,6 +58,85 @@ unit_root_test <- function(tbl, test = "ADF") {
     (print("Please specify a unit root test to perform!"))
 }
 
+#' regular expression to get forecast intervals in numeric format
+fix_names <- function(x) gsub("[\\%,]", "", x)
+
+get_forecasts <- function(mbl, h = 4, intervals = TRUE) {
+  if (intervals) {
+    fct <- forecast(mbl, h = h) %>%
+      hilo(level = c(80, 95)) %>%
+      unpack_hilo(c("80%", "95%"), names_repair = fix_names)
+  } else {
+    fct <- forecast(mbl, h = h)
+  }
+  return(fct)
+}
+
+training_fit <- function(model_fit) {
+  df <- fitted(model_fit) %>%
+    as_tibble() %>%
+    select(-.model) %>%
+    left_join(ground_truth) %>%
+    mutate(fit = "Training")
+  return(df)
+}
+
+test_fit <- function(model_fit) {
+  fcts <- get_forecasts(model_fit)
+  test_fits <- fcts %>%
+    select(cfips, state, census_region, .mean, `95_lower`, `95_upper`) %>%
+    rename(.fitted = .mean) %>%
+    as_tibble() %>%
+    relocate(ym, .after = census_region) %>%
+    left_join(test_sample) %>%
+    filter(!is.na(activity)) %>%
+    mutate(fit = "Test")
+  return(test_fits)
+}
+
+combine_model_fits <- function(model_fit, forecasts) {
+  model_train_fit <-
+    model_fit %>%
+    fitted() %>%
+    as_tibble() %>%
+    select(-.model) %>%
+    left_join(ground_truth) %>%
+    mutate(fit = "Training")
+  
+  model_test_fit <-
+    forecasts %>%
+    select(cfips, state, census_region, .mean, `95_lower`, `95_upper`) %>%
+    rename(.fitted = .mean) %>%
+    as_tibble() %>%
+    relocate(ym, .after = census_region) %>%
+    left_join(test_sample) %>%
+    filter(!is.na(activity)) %>%
+    mutate(fit = "Forecast")
+  df <- bind_rows(model_train_fit, model_test_fit)
+  return(df)
+}
+
+save_model <- function(model_fit, version = 1) {
+  # Check if the "models" directory exists
+  if (!dir.exists("models")) {
+    # If not, create it
+    dir.create("models")
+  }
+  name <- deparse(substitute(model_fit))
+  # Construct the file path for the model
+  file_path <- paste0("models/", name, "_v", version, ".rds")
+  # Check if the file already exists
+  if (file.exists(file_path)) {
+    # If it does, print a warning and increment the version number
+    warning(paste0("Model ", file_path, " already exists! Saving as version ", version + 1, "..."))
+    save_model(model_fit, version = version + 1)
+  } else {
+    # Save the model to the "models" directory with the ".rds" extension
+    saveRDS(model_fit, file = file_path)
+  }
+}
+
+
 ###### Aesthetics #######
 theme_clean <- function(...) {
   ggpubr::theme_classic2() +
@@ -120,63 +199,6 @@ emerald <- "#00997b"
 dark_emerald <- "#2d6d66"
 ##### DATA #####
 
-#' regular expression to get forecast intervals in numeric format
-fix_names <- function(x) gsub("[\\%,]", "", x)
-
-get_forecasts <- function(mbl, h = 4, intervals = TRUE) {
-  if (intervals) {
-    fct <- forecast(mbl, h = h) %>%
-      hilo(level = c(80, 95)) %>%
-      unpack_hilo(c("80%", "95%"), names_repair = fix_names)
-  } else {
-    fct <- forecast(mbl, h = h)
-  }
-  return(fct)
-}
-
-training_fit <- function(model_fit) {
-  df <- fitted(model_fit) %>%
-    as_tibble() %>%
-    select(-.model) %>%
-    left_join(ground_truth) %>%
-    mutate(fit = "Training")
-  return(df)
-}
-
-test_fit <- function(model_fit) {
-  fcts <- get_forecasts(model_fit)
-  test_fits <- fcts %>%
-    select(cfips, state, census_region, .mean, `95_lower`, `95_upper`) %>%
-    rename(.fitted = .mean) %>%
-    as_tibble() %>%
-    relocate(ym, .after = census_region) %>%
-    left_join(test_sample) %>%
-    filter(!is.na(activity)) %>%
-    mutate(fit = "Test")
-  return(test_fits)
-}
-
-combine_model_fits <- function(model_fit, forecasts) {
-  model_train_fit <-
-    model_fit %>%
-    fitted() %>%
-    as_tibble() %>%
-    select(-.model) %>%
-    left_join(ground_truth) %>%
-    mutate(fit = "Training")
-  
-  model_test_fit <-
-    forecasts %>%
-    select(cfips, state, census_region, .mean, `95_lower`, `95_upper`) %>%
-    rename(.fitted = .mean) %>%
-    as_tibble() %>%
-    relocate(ym, .after = census_region) %>%
-    left_join(test_sample) %>%
-    filter(!is.na(activity)) %>%
-    mutate(fit = "Forecast")
-  df <- bind_rows(model_train_fit, model_test_fit)
-  return(df)
-}
 
 train <- read_csv("./data/processed/enriched_train.csv")
 test <- read_csv("./data/test.csv")
@@ -200,12 +222,12 @@ test_sample <- filter(train, date > "2022-07-01") %>% select(cfips, activity)
 tslm_fit <- train_sample %>%  model(tslm = TSLM(activity ~ trend() + season(period = 12)))
 ets_fit <- train_sample %>%  model(ets = ETS(activity ~ trend() + season(period = 12, method = "A") + error(method = "A")))
 theta_fit <- train_sample %>% model(theta = THETA(activity ~ season(period  = 12)))
+arima_fit <- train_sample %>% model(arima = ARIMA(activity))
 
 #' Forecasts
 tslm_forecasts <- get_forecasts(tslm_fit, h = 8)
 ets_forecasts <- get_forecasts(ets_fit, h = 8)
-theta_forecasts <- get_forecasts(theta_fit, h = 8)
-arima_fit <- ts %>% model(arima = ARIMA(activity))
+theta_forecasts <- get_forecasts(theta_fit, h = 8)``
 
 #PCA
 xreg <- train %>% select(activity:pct_it_workers)
@@ -220,7 +242,7 @@ fit <- train %>%
     ar  = AR(activity),
     rw = ARIMA(activity ~ pdq(d = 1))
   ) %>% 
-  mutate(ensemble = (snaive + tslm + ets + ar + rw + arima) / 5)
+    mutate(ensemble = (snaive + tslm + ets + ar + rw + arima) / 5)
 
 tslm_fit %>%
   fitted() %>%
@@ -240,38 +262,12 @@ arima_fit %>%
   left_join(ground_truth) %>%
   yardstick::metrics(activity, .fitted)
 
-
 theta_fit %>%
   fitted() %>%
   as_tibble() %>%
   left_join(ground_truth) %>%
   yardstick::metrics(activity, .fitted)
 
-tslm_train_fit <-
-  tslm_fit %>%
-  fitted() %>%
-  as_tibble() %>%
-  left_join(ground_truth)
-
-ets_train_fit <-
-  ets_fit %>%
-  fitted() %>%
-  as_tibble() %>%
-  select(-.model) %>%
-  left_join(ground_truth) %>%
-  mutate(fit = "Training")
-
-
-ets_test_fit <-
-  ets_forecasts %>%
-  select(cfips, state, census_region, .mean, `95_lower`, `95_upper`) %>%
-  rename(.fitted = .mean) %>%
-  as_tibble() %>%
-  relocate(ym, .after = census_region) %>%
-  left_join(test_sample) %>%
-  filter(!is.na(activity)) %>%
-  mutate(fit = "Test")
-
 ets_model <- combine_model_fits(ets_fit, ets_forecasts)
 tslm_model <- combine_model_fits(tslm_fit, tslm_forecasts)
 theta_model <- combine_model_fits(theta_fit, theta_forecasts)
@@ -284,32 +280,24 @@ arima_train_fit <-
   left_join(ground_truth) %>%
   mutate(fit = "Training")
 
-
-ets_test_fit <-
-  ets_forecasts %>%
-  select(cfips, state, census_region, .mean, `95_lower`, `95_upper`) %>%
-  rename(.fitted = .mean) %>%
-  as_tibble() %>%
-  relocate(ym, .after = census_region) %>%
-  left_join(test_sample) %>%
-  filter(!is.na(activity)) %>%
-  mutate(fit = "Test")
+# arima_train_fit <- 
+#   arima_fit %>%
+#   fitted() %>%
+#   as_tibble() %>%
+#   left_join(ground_truth)
 
 ets_model <- combine_model_fits(ets_fit, ets_forecasts)
 tslm_model <- combine_model_fits(tslm_fit, tslm_forecasts)
 theta_model <- combine_model_fits(theta_fit, theta_forecasts)
+arima_model <- combine_model_fits(arima_fit, arima_forecasts)
 
-arima_train_fit <- 
-  arima_fit %>%
-  fitted() %>%
-  as_tibble() %>%
-  left_join(ground_truth)
+#' save training models
+save_model(ets_fit)
+save_model(tslm_fit)
+save_model(theta_fit)
 
 Metrics::smape(ets_train_fit$activity, ets_train_fit$.fitted)
 Metrics::smape(tslm_train_fit$activity, tslm_train_fit$.fitted)
-
-
-
 Metrics::smape(arima_train_fit$activity, arima_train_fit$.fitted)
 
 stl_dcmp <- ts %>%
@@ -319,7 +307,7 @@ stl_dcmp <- ts %>%
     robust = TRUE)
   ) %>%
   components()
-model
+
 Metrics::smape(ets_test_fit$activity, ets_test_fit$.fitted)
 yardstick::metrics(ets_test_fit, activity, fct)
 
@@ -329,16 +317,6 @@ train %>%
   geom_line(aes(y = activity)) + 
   facet_wrap(vars(cfips), scales = "free") +
   theme_clean()
-
-ets_train_fit %>%
-  filter(state == "Washington") %>%
-  ggplot(aes(x = ym)) +
-  geom_jitter(aes(y = activity, color = "Actual")) + 
-  geom_line(aes(y = .fitted, color = "Forecast")) + 
-  theme_clean() +
-  labs(x = "", y = "Activity") +
-  facet_wrap(vars(cfips), scales = "free")
-
 
 ets_model %>%
   left_join(counties) %>%
@@ -376,8 +354,9 @@ tslm_model %>%
   labs(x = "", y = "Activity", color = "", fill = "") +
   facet_wrap(vars(county), scales = "free")
   
-ggsave("washington_small_multiples.svg", plot = last_plot(), dpi = 720, height = 8, width = 12)
+#ggsave("washington_small_multiples.svg", plot = last_plot(), dpi = 720, height = 8, width = 12)
 
+#' refitting model
 ets_refit <- refit(ets_fit, train) %>%
   get_forecasts(h = 8)
 
