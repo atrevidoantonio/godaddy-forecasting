@@ -58,9 +58,14 @@ unit_root_test <- function(tbl, test = "ADF") {
     (print("Please specify a unit root test to perform!"))
 }
 
-#' regular expression to get forecast intervals in numeric format
+#' regular expression to clean forecast intervals in numeric format
 fix_names <- function(x) gsub("[\\%,]", "", x)
 
+#' Extract forecasts from a fitted model
+#' @param mbl A fitted model object
+#' @param h The number of forecast periods
+#' @param intervals A Boolean indicating whether to include prediction intervals
+#' @return A tibble with the forecast data
 get_forecasts <- function(mbl, h = 4, intervals = TRUE) {
   if (intervals) {
     fct <- forecast(mbl, h = h) %>%
@@ -72,6 +77,12 @@ get_forecasts <- function(mbl, h = 4, intervals = TRUE) {
   return(fct)
 }
 
+#' Extract and format training data fit:
+#' @param model_fit A fitted model object
+#' @return A tibble with the training data fit
+#' @examples
+#' model_fit <- lm(y ~ x)
+#' training_fit(model_fit)
 training_fit <- function(model_fit) {
   df <- fitted(model_fit) %>%
     as_tibble() %>%
@@ -80,7 +91,12 @@ training_fit <- function(model_fit) {
     mutate(fit = "Training")
   return(df)
 }
-
+#' Extract and format test data fit
+#' @param model_fit A fitted model object
+#' @return A tibble with the test data fit
+#' @examples
+#' model_fit <- lm(y ~ x)
+#' test_fit(model_fit)
 test_fit <- function(model_fit) {
   fcts <- get_forecasts(model_fit)
   test_fits <- fcts %>%
@@ -93,8 +109,13 @@ test_fit <- function(model_fit) {
     mutate(fit = "Test")
   return(test_fits)
 }
-
+#' combine_model_fits takes two arguments:
+#' @param model_fit, which is a model object fit on training data
+#' and @param forecast' the forecasted values from the
+#' model fit. This function combines the fitted values of the training fit
+#' and the forecast into a single dataframe along with the ground truth data
 combine_model_fits <- function(model_fit, forecasts) {
+  #' training fit of the model 
   model_train_fit <-
     model_fit %>%
     fitted() %>%
@@ -102,7 +123,7 @@ combine_model_fits <- function(model_fit, forecasts) {
     select(-.model) %>%
     left_join(ground_truth) %>%
     mutate(fit = "Training")
-  
+#' test fit
   model_test_fit <-
     forecasts %>%
     select(cfips, state, census_region, .mean, `95_lower`, `95_upper`) %>%
@@ -115,6 +136,14 @@ combine_model_fits <- function(model_fit, forecasts) {
   df <- bind_rows(model_train_fit, model_test_fit)
   return(df)
 }
+
+#' save_model takes two arguments:
+#'@param model_fit, the fitted model object be saved. 
+#' The function will then use the deparse and substitute functions
+#' to extract the name of the object passed as an argument and use it as the filename for the saved model;
+#' @param version, which is an integer representing the version number of the model.
+# If a model with the same name and version already exists in the "models" directory,
+# the function will print a warning and increment the version number before saving the model.
 
 save_model <- function(model_fit, version = 1) {
   # Check if the "models" directory exists
