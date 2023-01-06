@@ -165,6 +165,27 @@ save_model <- function(model_fit, version = 1) {
   }
 }
 
+#' Fit a list of models to data and save them to a directory
+#' @param data A data frame containing the data to use for model fitting
+#' @param model_spec A string containing the path to a JSON file with the model specification
+#' @return A list of fitted model objects
+fit_models <- function(data, model_spec) {
+  # Read the model specification from the JSON file
+  models <- jsonlite::fromJSON(model_spec)
+  # Fit the models to the data
+  fit_list <- lapply(models, function(model) {
+    cat(paste0("Fitting ", model$name, " model...\n"))
+    fit <- data %>% model(!!model$name := !!model$formula)
+    cat(paste0(model$name, " model fitted!\n\n"))
+    # Save the model to the "models" directory
+    save_model(fit)
+    return(fit)
+  })
+  names(fit_list) <- sapply(models, function(model)
+    model$name)
+  return(fit_list)
+}
+
 
 ###### Aesthetics #######
 theme_clean <- function(...) {
