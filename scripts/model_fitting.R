@@ -58,7 +58,7 @@ unit_root_test <- function(tbl, test = "ADF") {
     (print("Please specify a unit root test to perform!"))
 }
 
-#' regular expression to clean forecast intervals in numeric format
+#' regular expression to clean forecast intervals
 fix_names <- function(x) gsub("[\\%,]", "", x)
 
 #' Extract forecasts from a fitted model
@@ -256,10 +256,10 @@ arima_fit <- train_sample %>% model(arima = ARIMA(activity))
 #' Forecasts
 tslm_forecasts <- get_forecasts(tslm_fit, h = 8)
 ets_forecasts <- get_forecasts(ets_fit, h = 8)
-theta_forecasts <- get_forecasts(theta_fit, h = 8)``
-
+theta_forecasts <- get_forecasts(theta_fit, h = 8)
+arima_forecasts <- get_forecasts(arima_fit, h = 8)
 #PCA
-xreg <- train %>% select(activity:pct_it_workers)
+xreg <- train %>% as_tibble() %>% select(activity:pct_it_workers)
 pca <- xreg %>% na.omit() %>% prcomp(xreg)
 
 #' Fable ensemble forecasting
@@ -300,8 +300,9 @@ theta_fit %>%
 ets_model <- combine_model_fits(ets_fit, ets_forecasts)
 tslm_model <- combine_model_fits(tslm_fit, tslm_forecasts)
 theta_model <- combine_model_fits(theta_fit, theta_forecasts)
+arima_model <- combine_model_fits(arima_fit, arima_forecasts)
 
-arima_train_fit <- 
+arima_train_fit <-
   arima_fit %>%
   fitted() %>%
   as_tibble() %>%
