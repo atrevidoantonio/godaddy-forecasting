@@ -1,4 +1,4 @@
-This is pdfTeX, Version 3.141592653-2.6-1.40.24 (MiKTeX 22.10) (preloaded format=pdflatex 2022.11.1)  5 JAN 2023 08:46
+This is pdfTeX, Version 3.141592653-2.6-1.40.24 (MiKTeX 22.10) (preloaded format=pdflatex 2022.11.1)  7 JAN 2023 20:58
 entering extended mode
  restricted \write18 enabled.
  %&-line parsing enabled.
@@ -6,12 +6,8 @@ entering extended mode
 (microbusiness-forecasting.tex
 LaTeX2e <2022-06-01> patch level 5
 L3 programming layer <2022-09-28> (CascadeAnalyticsWPS.cls
-
-LaTeX Warning: You have requested document class `CascadeAnalyticsWPS',
-               but the document class provides `CascadeAnalyticsWorkingPaper'.
-
-Document Class: CascadeAnalyticsWorkingPaper 2023/01/04 Cascade Analytics Worki
-ng Paper v1.0
+Document Class: CascadeAnalyticsWPS 2023/01/04 Cascade Analytics Working Paper 
+v1.0
 
 (C:\Users\anthonyp\AppData\Local\Programs\MiKTeX\tex/latex/etoolbox\etoolbox.st
 y
@@ -662,14 +658,24 @@ Package: natbib 2010/09/13 8.31b (PWD, AO)
 LaTeX Info: Redefining \cite on input line 694.
 \c@NAT@ctr=\count314
 )
+(C:\Users\anthonyp\AppData\Local\Programs\MiKTeX\tex/latex/tools\bm.sty
+Package: bm 2022/01/05 v1.2f Bold Symbol Support (DPC/FMi)
+\symboldoperators=\mathgroup6
+\symboldletters=\mathgroup7
+\symboldsymbols=\mathgroup8
+Package bm Info: No bold for \OMX/cmex/m/n, using \pmb.
+Package bm Info: No bold for \U/msa/m/n, using \pmb.
+Package bm Info: No bold for \U/msb/m/n, using \pmb.
+LaTeX Font Info:    Redeclaring math alphabet \mathbf on input line 149.
+)
 LaTeX Font Info:    Trying to load font information for T1+ntxtlf on input line
- 46.
+ 43.
 
 (C:\Users\anthonyp\AppData\Local\Programs\MiKTeX\tex/latex/newtx\t1ntxtlf.fd
 File: t1ntxtlf.fd 2021/05/24 v1.1 font definition file for T1/ntx/tlf
 )
 LaTeX Font Info:    Font shape `T1/ntxtlf/m/n' will be
-(Font)              scaled to size 12.0pt on input line 46.
+(Font)              scaled to size 12.0pt on input line 43.
 
 (C:\Users\anthonyp\AppData\Local\Programs\MiKTeX\tex/latex/l3backend\l3backend-
 pdftex.def
@@ -679,24 +685,24 @@ File: l3backend-pdftex.def 2022-09-28 L3 backend support: PDF output (pdfTeX)
 ) (microbusiness-forecasting.aux)
 \openout1 = `microbusiness-forecasting.aux'.
 
-LaTeX Font Info:    Checking defaults for OML/cmm/m/it on input line 46.
-LaTeX Font Info:    ... okay on input line 46.
-LaTeX Font Info:    Checking defaults for OMS/cmsy/m/n on input line 46.
-LaTeX Font Info:    ... okay on input line 46.
-LaTeX Font Info:    Checking defaults for OT1/cmr/m/n on input line 46.
-LaTeX Font Info:    ... okay on input line 46.
-LaTeX Font Info:    Checking defaults for T1/cmr/m/n on input line 46.
-LaTeX Font Info:    ... okay on input line 46.
-LaTeX Font Info:    Checking defaults for TS1/cmr/m/n on input line 46.
-LaTeX Font Info:    ... okay on input line 46.
-LaTeX Font Info:    Checking defaults for OMX/cmex/m/n on input line 46.
-LaTeX Font Info:    ... okay on input line 46.
-LaTeX Font Info:    Checking defaults for U/cmr/m/n on input line 46.
-LaTeX Font Info:    ... okay on input line 46.
-LaTeX Font Info:    Checking defaults for PD1/pdf/m/n on input line 46.
-LaTeX Font Info:    ... okay on input line 46.
-LaTeX Font Info:    Checking defaults for PU/pdf/m/n on input line 46.
-LaTeX Font Info:    ... okay on input line 46.
+LaTeX Font Info:    Checking defaults for OML/cmm/m/it on input line 43.
+LaTeX Font Info:    ... okay on input line 43.
+LaTeX Font Info:    Checking defaults for OMS/cmsy/m/n on input line 43.
+LaTeX Font Info:    ... okay on input line 43.
+LaTeX Font Info:    Checking defaults for OT1/cmr/m/n on input line 43.
+LaTeX Font Info:    ... okay on input line 43.
+LaTeX Font Info:    Checking defaults for T1/cmr/m/n on input line 43.
+LaTeX Font Info:    ... okay on input line 43.
+LaTeX Font Info:    Checking defaults for TS1/cmr/m/n on input line 43.
+LaTeX Font Info:    ... okay on input line 43.
+LaTeX Font Info:    Checking defaults for OMX/cmex/m/n on input line 43.
+LaTeX Font Info:    ... okay on input line 43.
+LaTeX Font Info:    Checking defaults for U/cmr/m/n on input line 43.
+LaTeX Font Info:    ... okay on input line 43.
+LaTeX Font Info:    Checking defaults for PD1/pdf/m/n on input line 43.
+LaTeX Font Info:    ... okay on input line 43.
+LaTeX Font Info:    Checking defaults for PU/pdf/m/n on input line 43.
+LaTeX Font Info:    ... okay on input line 43.
 
 (C:\Users\anthonyp\AppData\Local\Programs\MiKTeX\tex/context/base/mkii\supp-pdf
 .mkii
@@ -716,16 +722,8 @@ LaTeX Font Info:    ... okay on input line 46.
 (C:\Users\anthonyp\AppData\Local\Programs\MiKTeX\tex/latex/epstopdf-pkg\epstopd
 f-base.sty
 Package: epstopdf-base 2020-01-24 v2.11 Base part for package epstopdf
-
-(C:\Users\anthonyp\AppData\Local\Programs\MiKTeX\tex/latex/grfext\grfext.sty
-Package: grfext 2019/12/03 v1.3 Manage graphics extensions (HO)
-)
 Package epstopdf-base Info: Redefining graphics rule for `.eps' on input line 4
 85.
-Package grfext Info: Graphics extension search list:
-(grfext)             [.pdf,.png,.jpg,.mps,.jpeg,.jbig2,.jb2,.PDF,.PNG,.JPG,.JPE
-G,.JBIG2,.JB2,.eps]
-(grfext)             \AppendGraphicsExtensions on input line 504.
 
 (C:\Users\anthonyp\AppData\Local\Programs\MiKTeX\tex/latex/00miktex\epstopdf-sy
 s.cfg
@@ -739,7 +737,7 @@ Package caption Info: rotating package is loaded.
 Package caption Info: End \AtBeginDocument code.
 Package lastpage Info: Please have a look at the pageslts package at
 (lastpage)             https://www.ctan.org/pkg/pageslts
-(lastpage)             ! on input line 46.
+(lastpage)             ! on input line 43.
 
 *geometry* driver: auto-detecting
 *geometry* detected driver: pdftex
@@ -777,49 +775,49 @@ Package lastpage Info: Please have a look at the pageslts package at
 
 \c@mv@tabular=\count322
 \c@mv@boldtabular=\count323
-Package hyperref Info: Link coloring ON on input line 46.
+Package hyperref Info: Link coloring ON on input line 43.
 (microbusiness-forecasting.out) (microbusiness-forecasting.out)
 \@outlinefile=\write3
 \openout3 = `microbusiness-forecasting.out'.
 
 \c@lstlisting=\count324
-<company.png, id=7, 257.96375pt x 196.48407pt>
+<company.png, id=35, 257.96375pt x 196.48407pt>
 File: company.png Graphic file (type png)
 <use company.png>
-Package pdftex.def Info: company.png  used on input line 55.
+Package pdftex.def Info: company.png  used on input line 52.
 (pdftex.def)             Requested size: 170.71652pt x 130.03365pt.
 LaTeX Font Info:    Font shape `T1/ntxtlf/m/n' will be
-(Font)              scaled to size 20.74pt on input line 56.
-LaTeX Font Info:    Trying to load font information for T1+qhv on input line 56
+(Font)              scaled to size 20.74pt on input line 53.
+LaTeX Font Info:    Trying to load font information for T1+qhv on input line 53
 .
 
 (C:\Users\anthonyp\AppData\Local\Programs\MiKTeX\tex/latex/tex-gyre\t1qhv.fd
 File: t1qhv.fd 2009/09/25 v1.2 font definition file for T1/qhv
 )
 LaTeX Font Info:    Font shape `T1/qhv/m/n' will be
-(Font)              scaled to size 19.49565pt on input line 56.
-LaTeX Font Info:    Trying to load font information for U+msa on input line 58.
+(Font)              scaled to size 19.49565pt on input line 53.
+LaTeX Font Info:    Trying to load font information for U+msa on input line 55.
 
 
 (C:\Users\anthonyp\AppData\Local\Programs\MiKTeX\tex/latex/amsfonts\umsa.fd
 File: umsa.fd 2013/01/14 v3.01 AMS symbols A
 )
-LaTeX Font Info:    Trying to load font information for U+msb on input line 58.
+LaTeX Font Info:    Trying to load font information for U+msb on input line 55.
 
 
 (C:\Users\anthonyp\AppData\Local\Programs\MiKTeX\tex/latex/amsfonts\umsb.fd
 File: umsb.fd 2013/01/14 v3.01 AMS symbols B
 )
 LaTeX Font Info:    Font shape `T1/ntxtlf/m/n' will be
-(Font)              scaled to size 8.0pt on input line 58.
+(Font)              scaled to size 8.0pt on input line 55.
 LaTeX Font Info:    Font shape `T1/ntxtlf/m/n' will be
-(Font)              scaled to size 10.0pt on input line 58.
+(Font)              scaled to size 10.0pt on input line 55.
 LaTeX Font Info:    Font shape `T1/ntxtlf/m/n' will be
-(Font)              scaled to size 7.0pt on input line 58.
+(Font)              scaled to size 7.0pt on input line 55.
 LaTeX Font Info:    Font shape `T1/ntxtlf/b/n' will be
-(Font)              scaled to size 12.0pt on input line 60.
+(Font)              scaled to size 12.0pt on input line 57.
 LaTeX Font Info:    Font shape `T1/ntxtlf/m/n' will be
-(Font)              scaled to size 14.4pt on input line 64.
+(Font)              scaled to size 14.4pt on input line 63.
 
 [1
 
@@ -832,6 +830,26 @@ LaTeX Font Info:    Font shape `T1/qhv/m/n' will be
 LaTeX Font Warning: Font shape `T1/ntxtlf/sb/n' undefined
 (Font)              using `T1/ntxtlf/b/n' instead on input line 1.
 
+
+LaTeX Font Warning: Font shape `T1/ntxtlf/sb/n' undefined
+(Font)              using `T1/ntxtlf/b/n' instead on input line 2.
+
+
+LaTeX Font Warning: Font shape `T1/ntxtlf/sb/n' undefined
+(Font)              using `T1/ntxtlf/b/n' instead on input line 3.
+
+
+LaTeX Font Warning: Font shape `T1/ntxtlf/sb/n' undefined
+(Font)              using `T1/ntxtlf/b/n' instead on input line 6.
+
+
+LaTeX Font Warning: Font shape `T1/ntxtlf/sb/n' undefined
+(Font)              using `T1/ntxtlf/b/n' instead on input line 7.
+
+
+LaTeX Font Warning: Font shape `T1/ntxtlf/sb/n' undefined
+(Font)              using `T1/ntxtlf/b/n' instead on input line 8.
+
 )
 \tf@toc=\write4
 \openout4 = `microbusiness-forecasting.toc'.
@@ -841,43 +859,119 @@ pdfTeX warning (ext4): destination with the same identifier (name{page.1}) has
 been already used, duplicate ignored
 <to be read again> 
                    \relax 
-l.73 	\cleardoublepage
-                       [1] 
-AED: lastpage setting LastPage
+l.72 	\cleardoublepage
+                       [1]
 File: company.png Graphic file (type png)
 <use company.png>
-Package pdftex.def Info: company.png  used on input line 82.
+Package pdftex.def Info: company.png  used on input line 80.
 (pdftex.def)             Requested size: 42.67912pt x 32.5054pt.
 
 pdfTeX warning (ext4): destination with the same identifier (name{page.1}) has 
 been already used, duplicate ignored
 <to be read again> 
                    \relax 
-l.82 \end{document}
+l.80 \section{Data}
                     [1
 
-] (microbusiness-forecasting.aux)
+]
+File: company.png Graphic file (type png)
+<use company.png>
+Package pdftex.def Info: company.png  used on input line 83.
+(pdftex.def)             Requested size: 42.67912pt x 32.5054pt.
+ [2]
+LaTeX Font Info:    Font shape `T1/qhv/m/n' will be
+(Font)              scaled to size 13.53603pt on input line 85.
+LaTeX Font Info:    Trying to load font information for T1+ntxsups on input lin
+e 101.
+
+(C:\Users\anthonyp\AppData\Local\Programs\MiKTeX\tex/latex/newtx\t1ntxsups.fd
+File: t1ntxsups.fd 2015/01/17 v1.0
+)
+LaTeX Font Info:    Font shape `T1/ntxsups/m/n' will be
+(Font)              scaled to size 12.0pt on input line 101.
+LaTeX Font Info:    Font shape `T1/ntxsups/m/n' will be
+(Font)              scaled to size 10.0pt on input line 102.
+File: company.png Graphic file (type png)
+<use company.png>
+Package pdftex.def Info: company.png  used on input line 106.
+(pdftex.def)             Requested size: 42.67912pt x 32.5054pt.
+
+[3]
+File: company.png Graphic file (type png)
+<use company.png>
+Package pdftex.def Info: company.png  used on input line 124.
+(pdftex.def)             Requested size: 42.67912pt x 32.5054pt.
+ [4]
+File: company.png Graphic file (type png)
+<use company.png>
+Package pdftex.def Info: company.png  used on input line 144.
+(pdftex.def)             Requested size: 42.67912pt x 32.5054pt.
+ [5]
+File: company.png Graphic file (type png)
+<use company.png>
+Package pdftex.def Info: company.png  used on input line 146.
+(pdftex.def)             Requested size: 42.67912pt x 32.5054pt.
+ [6] (microbusiness-forecasting.bbl
+File: company.png Graphic file (type png)
+<use company.png>
+Package pdftex.def Info: company.png  used on input line 5.
+(pdftex.def)             Requested size: 42.67912pt x 32.5054pt.
+ [7]
+LaTeX Font Info:    Font shape `T1/ntxtlf/m/it' will be
+(Font)              scaled to size 12.0pt on input line 10.
+
+Underfull \hbox (badness 1540) in paragraph at lines 97--101
+[]\T1/ntxtlf/b/n/12 Montero-Manso, Pablo, George Athana-sopou-los, Rob J. Hyn-d
+-man, and
+ []
+
+File: company.png Graphic file (type png)
+<use company.png>
+Package pdftex.def Info: company.png  used on input line 101.
+(pdftex.def)             Requested size: 42.67912pt x 32.5054pt.
+[8]) 
+AED: lastpage setting LastPage
+File: company.png Graphic file (type png)
+<use company.png>
+Package pdftex.def Info: company.png  used on input line 150.
+(pdftex.def)             Requested size: 42.67912pt x 32.5054pt.
+[9] (microbusiness-forecasting.aux)
 Package rerunfilecheck Info: File `microbusiness-forecasting.out' has not chang
 ed.
-(rerunfilecheck)             Checksum: 9814C2D956916ADB9290ECA4E25C967A;103.
+(rerunfilecheck)             Checksum: 48F4236E5BC0B69E9021D6032C648F26;808.
  ) 
 Here is how much of TeX's memory you used:
- 17512 strings out of 475385
- 286041 string characters out of 2775491
- 620225 words of memory out of 3000000
- 38580 multiletter control sequences out of 15000+600000
- 505159 words of font info for 65 fonts, out of 8000000 for 9000
+ 17769 strings out of 475385
+ 290005 string characters out of 2775491
+ 633432 words of memory out of 3000000
+ 38770 multiletter control sequences out of 15000+600000
+ 518434 words of font info for 87 fonts, out of 8000000 for 9000
  1141 hyphenation exceptions out of 8191
- 87i,14n,91p,363b,524s stack positions out of 10000i,1000n,20000p,200000b,80000s
+ 87i,14n,91p,981b,624s stack positions out of 10000i,1000n,20000p,200000b,80000s
 {C:/Users/anthonyp/AppData/Local/Programs/MiKTeX/fonts/enc/dvips/newtx/ntx-ec
--tlf.enc}{C:/Users/anthonyp/AppData/Local/Programs/MiKTeX/fonts/enc/dvips/tex-g
-yre/q-ec.enc}<C:/Users/anthonyp/AppData/Local/Programs/MiKTeX/fonts/type1/publi
-c/tex-gyre/qhvr.pfb><C:/Users/anthonyp/AppData/Local/Programs/MiKTeX/fonts/type
-1/public/newtx/ztmb.pfb><C:/Users/anthonyp/AppData/Local/Programs/MiKTeX/fonts/
-type1/public/newtx/ztmr.pfb>
-Output written on microbusiness-forecasting.pdf (3 pages, 119325 bytes).
+-tlf.enc}{C:/Users/anthonyp/AppData/Local/Programs/MiKTeX/fonts/enc/dvips/newtx
+/ntxsups_t1.enc}{C:/Users/anthonyp/AppData/Local/Programs/MiKTeX/fonts/enc/dvip
+s/tex-gyre/q-ec.enc}<C:/Users/anthonyp/AppData/Local/Programs/MiKTeX/fonts/type
+1/public/amsfonts/cmextra/cmbsy8.pfb><C:/Users/anthonyp/AppData/Local/Programs/
+MiKTeX/fonts/type1/public/amsfonts/cm/cmbx12.pfb><C:/Users/anthonyp/AppData/Loc
+al/Programs/MiKTeX/fonts/type1/public/amsfonts/cm/cmex10.pfb><C:/Users/anthonyp
+/AppData/Local/Programs/MiKTeX/fonts/type1/public/amsfonts/cm/cmmi12.pfb><C:/Us
+ers/anthonyp/AppData/Local/Programs/MiKTeX/fonts/type1/public/amsfonts/cm/cmmi8
+.pfb><C:/Users/anthonyp/AppData/Local/Programs/MiKTeX/fonts/type1/public/amsfon
+ts/cm/cmmib10.pfb><C:/Users/anthonyp/AppData/Local/Programs/MiKTeX/fonts/type1/
+public/amsfonts/cm/cmr12.pfb><C:/Users/anthonyp/AppData/Local/Programs/MiKTeX/f
+onts/type1/public/amsfonts/cm/cmr8.pfb><C:/Users/anthonyp/AppData/Local/Program
+s/MiKTeX/fonts/type1/public/amsfonts/cm/cmsy10.pfb><C:/Users/anthonyp/AppData/L
+ocal/Programs/MiKTeX/fonts/type1/public/amsfonts/cm/cmsy8.pfb><C:/Users/anthony
+p/AppData/Local/Programs/MiKTeX/fonts/type1/public/newtx/ntxsups-Regular.pfb><C
+:/Users/anthonyp/AppData/Local/Programs/MiKTeX/fonts/type1/public/tex-gyre/qhvr
+.pfb><C:/Users/anthonyp/AppData/Local/Programs/MiKTeX/fonts/type1/public/newtx/
+ztmb.pfb><C:/Users/anthonyp/AppData/Local/Programs/MiKTeX/fonts/type1/public/ne
+wtx/ztmr.pfb><C:/Users/anthonyp/AppData/Local/Programs/MiKTeX/fonts/type1/publi
+c/newtx/ztmri.pfb>
+Output written on microbusiness-forecasting.pdf (11 pages, 304244 bytes).
 PDF statistics:
- 47 PDF objects out of 1000 (max. 8388607)
- 4 named destinations out of 1000 (max. 500000)
- 14 words of extra memory for PDF output out of 10000 (max. 10000000)
+ 301 PDF objects out of 1000 (max. 8388607)
+ 48 named destinations out of 1000 (max. 500000)
+ 70 words of extra memory for PDF output out of 10000 (max. 10000000)
 

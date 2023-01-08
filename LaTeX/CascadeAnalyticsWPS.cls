@@ -19,7 +19,7 @@
 %----------------------------------------------------------------------------------------
 
 \NeedsTeXFormat{LaTeX2e}
-\ProvidesClass{CascadeAnalyticsWorkingPaper}[2023/01/04 Cascade Analytics Working Paper v1.0]
+\ProvidesClass{CascadeAnalyticsWPS}[2023/01/04 Cascade Analytics Working Paper v1.0]
 
 \usepackage{etoolbox} % Required for conditional logic and easily changing commands
 

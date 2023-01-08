@@ -6,11 +6,7 @@
 % This template originates from:
 % https://www.LaTeXTemplates.com
 %
-% Author:
-% Vel (vel@latextemplates.com)
 %
-% License:
-% CC BY-NC-SA 4.0 (https://creativecommons.org/licenses/by-nc-sa/4.0/)
 %
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
@@ -26,6 +22,7 @@ a4paper, % Paper size, use either a4paper or letterpaper
 
 %\addbibresource{sample.bib} % BibLaTeX bibliography file
 \usepackage[authoryear]{natbib}
+\usepackage{bm}
 \bibliographystyle{aea}
 \renewcommand{\bibsection}{\section{References}}
 %----------------------------------------------------------------------------------------
@@ -51,16 +48,18 @@ a4paper, % Paper size, use either a4paper or letterpaper
 	
 	\thispagestyle{empty} % Suppress headers and footers on this page
 	\begin{titlepage}
-		\centering
+		\begin{center}
 		\includegraphics[width =6cm]{company.png}\\ \vspace{5mm}	
 		{\LARGE\sffamily\mdseries\reporttitle} \\ %Report title		
 		\vspace{5mm}	
 		{\normalsize{\reportauthors}}\blfootnote{aperez@cascade-analytics.com, bperez@cascade-analytics.com} \\ % Report authors, group or department
-		\vspace{5mm}
-		{\textbf{\normalsize{Abstract}}}\\
 		\vspace{3mm}
-		{\justifying{\footnotesize{We study the density of microbusiness activity in local labor markets across the United States.}}} 
+		{\textbf{\normalsize{Abstract}}} 
+		\end{center}
+%		\vspace{1mm}
+		\footnotesize{We study the density of microbusiness activity in local labor markets across the United States. Making use of data provided by GoDaddy's Venture Forward Project, we forecast the density of microbusiness activity across 3,150 counties, 949 core based statistical areas (CBSAs), and 50 states. Our methods combine the approaches of forecast combination and hierarchical forecasting to reach a Symmetric mean absolute percentage error (SMAPE) of 2.8\%}
 		\vfill\vfill\vfill % Vertical whitespace	
+		\centering
 		{\large\reportdate\par} % Report date
 	\end{titlepage}	
 	\newpage
@@ -77,6 +76,75 @@ a4paper, % Paper size, use either a4paper or letterpaper
 
 \section{Introduction}
 	
-In developed countries, microbusinesses (those employing fewer than 10 people) and home-based businesses have been systematically overlooked in urban economic development thinking. 
+In developed countries, microbusinesses (those employing fewer than 10 people) and home-based businesses have been systematically overlooked in urban economic development thinking.
+\section{Data}
+In 2018, GoDaddy began a project to analyze the economic impact of the microbusinesses our GoDaddy customers created across the U.S. GoDaddy establishes microbusiness density by measuring the number of GoDaddy-registered domains with active websites in a geographic region; these regions are aggregated results the Core-Based Statistical Area (CBSA), County and State level. The distinguishing characteristic of a microbusiness is a website. Some small businesses with websites are included in the count of microbusinesses. But the dataset also includes many businesses that operate online only, that are side gigs for their owners, or that have never registered with a government entity, and thus are not included in official measures of small businesses.
+
+\section{Methods}
+\label{sec:sec3}
+\subsection{Forecast Models}
+\label{sec:sec3.1}
+In this section we briefly review the forecasting models to be combined. Our focus is on forecasts of the microbusiness activity as measured by microbusiness density and the number of active microbusiness firms at forecast horizons between 1 and 12 months.
+
+Throughout the analysis, we let $Y$ be the random variable that generates the value to
+be forecast. To begin with, we restrict attention to point forecasts, $f$, which are functions
+of the available data at the time the forecast is made. Hence, if we collect all relevant
+information at the time of the forecast into the outcome $z$ of the random variable $Z$, then the forecast is $f(Z)$. Exactly how $z$ maps into the forecast $f(z)$ depends on a set of unknown parameters, $\Theta$, that typically have to be estimated from data, in which this dependency can be emphasized by writing $f(z, \Theta)$.
+
+The loss function is a function $\mathcal{L}(f, Y, Z)$ that maps the data, $Z$, outcome, $Y$, and forecast, $f$, to the real number line: for any set of values for these random variables the loss function returns a single number. The loss function describes in relative terms how bad any forecast might be given the outcome and possibly other observed data that accounts for any state dependence in the loss.
+
+Forecasts are generally viewed as "poor" if they are far from the observed realization of the outcome variable. However, point forecasts aim to estimate not the realization of the outcome but rather a function of its distribution \citep{elliot_2008, barrow2016}. For example, in the case of mean squared loss, this is the variance of $Y$ given $Z$ plus the squared difference between the forecast and the mean of $Y$ given $Z$. Both the conditional mean and variance of $Y$ are functions of $\Theta$ and $z$.
+
+\subsection{Combination Forecasts}
+\label{sec:sec3.2}
+Rather than rely upon a single model to produce forecasts, we utilize the forecast combination approach to combine a variety of forecast models. Combining forecasts from multiple models often outperforms forecasts from a single
+model \citep{clemen86, elliott_handbook_2013}. Forecast combinations have flourished remarkably in the forecasting community and, in recent years, have become part of the mainstream of forecasting research and activities. Combining multiple forecasts produced from a single (target) series is now widely used to improve accuracy through the integration of information gleaned from different sources, thereby mitigating the risk of identifying a single "best" forecast. Combination schemes have evolved from simple combination methods without estimation, to sophisticated methods involving time-varying weights, nonlinear combinations, correlations among components, and cross-learning. They include combining point forecasts and combining probabilistic forecasts.\footnote{The vast majority of studies on combining multiple forecasts have dealt with point forecasting, even
+though point forecasts (without associated measures of uncertainty) provide insufficient information for decision-making. } 
+
+
+The initial idea of forecast combination methods dates to the late 1960s, perhaps most notably to \cite{bates_combination_1969}. An extensive literature has built upon the topic, which is comprehensively reviewed and summarized in \cite{elliott_handbook_2013} and by \cite{WANG2022}. For any variable of interest there are (at least) three different ways of forecasting using combinations: (a) combining forecasts from different univariate models, (b) decomposition of the series into components which are modeled and recombined, and (c) modeling with different sets of predictors and combining the forecasts. 
+
+The empirical work supporting the validity of combining forecasts and its superior performance to single selection has been proven throughout the past decades. \cite{clemen89}
+provided an extensive bibliographical review of the early work on the combination of forecasts, and
+then addressed the issue that the arithmetic means often dominate more refined forecast combinations.
+\cite{makridakis83} concluded empirically that a larger number of individual methods included in the simple average scheme would help improve the accuracy of combined forecasts and reduce the variability associated with the selection of methods. While \cite{winkler83} tested five early procedures for estimating weights and found that results pointed towards a simple unweighted average as the superior choice. \cite{stock_comparison_1998} examined the performance of several univariate models for the prediction of US economic time series, finding that combinations of simple univariate models perform better than any other single approach. Other examples include the combination of forecasts from a particular family of models (see, for example \cite{kourentzes_another_2019}) and simple or weighted combinations across multiple different families \citep{petropoulos_simple_2020, montero_2020}. 
+
+Decomposition-based methods include the temporal hierarchies as described above, and the theta method where the seasonally-adjusted signal is separated into long and short-term components \citep{assimakopoulos_2000}. In the same category we could place bagging-related approaches \citep{bergmeir_2016, petropoulos_exploring_2018}, where the original series is used to produce several bootstrap series; these bootstraps are forecasted independently (using the same or different models), and, finally, the forecasts from all bootstraps are re-combined. Rapach et al. (2010) is an example of using an array of different predictors, and \cite{elliott_complete_2015} take approach (c) to a logical (frequentist) conclusion and compute and average over forecasts using all possible subsets of models from a group of predictors.
+
+
+We work with approach (a), combining the forecasts from univariate and multivariate models described in \ref{sec:sec3.1}. Typically, the combined forecast is constructed as a linear combination of the individual forecasts \citep{newbold74, clemen86,petropoulos_simple_2020}
+which can be written 
+
+\begin{equation}
+	Y_{k,\,t} = \sum\limits_{k =1}^{K}\omega_{k}\hat{y}_{k,\,t} = \bm{\omega^{\prime}}_{t}\hat{\mathbf{{y}}}_{t}
+\end{equation}
+
+where $\hat{\mathbf{{y}}}_{t}$ is the column vector of one-step-ahead forecasts at time $t$ ($y_{t +1}$) produced by the $k$-th forecasting method, and $\mathbf{w}^{\prime}_{t}$ is the column vector of weights for the set of $K$ forecasting methods. The weights $\omega_{k,\,t}$ will generally depend on the historical accuracy of base forecasts.
+Therefore when forecasting at time $t$, we use all observations prior to to estimate both base forecast model parameters and forecast weights. In the methods described below, weights obtained in forecasting at time $t$ are also utilized in forecasting multiple steps ahead.
+
+In a seminal paper, \cite{granger84} set out the foundations of optimal forecast combinations under symmetric and quadratic loss functions. They showed that under mean squared error (MSE) loss the optimal weights can be estimated through an ordinary least squares (OLS) regression of the target variable on a vector of forecasts plus an intercept to account for model bias. If the loss function differs from MSE, then the computation of optimal weights may require methods other than a simple OLS regression, An intercept term is often included following the suggestion by \cite{granger84} to ensure that the bias of the forecast is optimally determined. This formulation is expressed as,
+
+\begin{equation}
+	Y_{k, \, t} = \omega_{0} + \bm{\omega^{\prime}}_{t}\hat{\mathbf{{y}}}_{t} + \epsilon_{t+1}
+\end{equation}
+
+Assuming that the regression coefficients in (3.1) are constant, the intercept and weights can be estimated by OLS using an expanding window of the data. It is perhaps more common to use equal weights in the construction of forecasts. Many empirical studies have found that it is difficult to produce more precise forecasts than those generated by such equal weighted combinations \cite{gaglianone2014}. \cite{clemen89} argues that this equal weighting of component forecasts is often the best strategy in this context. This is still true three decades later and is referred to as the "forecast combination puzzle," a term coined by \cite{stock_combination_2004}. A rigorous attempt to explain why simple average weights often outperform more sophisticated forecast combination techniques is provided in a simulation study by \cite{smith2009}, who ascribe this surprising empirical
+finding to the effect of finite-sample error in estimating the combination weights.
+
+The simple average method of the forecast combination can be written 
+\begin{equation}
+Y_{k,\,t} = \frac{1}{k}\sum\limits_{k =1}^{K}f(k)
+\end{equation}
+where $f(k) = \hat{y}_{k,\,t}$.
+
+No information is required about the precision of the forecasts or about the dependence among the forecasts to generate a simple average. The treatment of assigning each forecast the same weight, however, implies that the forecasts are treated as being exchangeable \citep{clemen86}. 
+
+In recent years considerable attention has moved towards the use of probabilistic forecasts \citep{gaglianone2014, KAPETANIOS2015, martin2022} as they enable a rich assessment of forecast uncertainties. When working with probabilistic forecasts, issues such as diversity among individual forecasts can be more complex and less understood than combining point forecasts \citep{ranjan2010}.
+
+\section{Results}
+
+\section{Conclusion}
+
+\bibliography{refs}
 
 \end{document}

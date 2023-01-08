@@ -1,0 +1,53 @@
+This is BibTeX, Version 0.99d
+Capacity: max_strings=200000, hash_size=200000, hash_prime=170003
+The top-level auxiliary file: microbusiness-forecasting.aux
+Reallocating 'name_of_file' (item size: 1) to 4 items.
+The style file: aea.bst
+Reallocating 'name_of_file' (item size: 1) to 5 items.
+Database file #1: refs.bib
+Repeated entry---line 177 of file refs.bib
+ : @article{winkler83
+ :                   ,
+I'm skipping whatever remains of this entry
+You've used 25 entries,
+            2695 wiz_defined-function locations,
+            766 strings with 8884 characters,
+and the built_in function-call counts, 176943 in all, are:
+= -- 29872
+> -- 1837
+< -- 0
++ -- 14564
+- -- 579
+* -- 15996
+:= -- 34189
+add.period$ -- 174
+call.type$ -- 25
+change.case$ -- 325
+chr.to.int$ -- 25
+cite$ -- 25
+duplicate$ -- 371
+empty$ -- 1018
+format.name$ -- 591
+if$ -- 31910
+int.to.chr$ -- 5
+int.to.str$ -- 0
+missing$ -- 0
+newline$ -- 82
+num.names$ -- 275
+pop$ -- 26
+preamble$ -- 1
+purify$ -- 375
+quote$ -- 0
+skip$ -- 302
+stack$ -- 0
+substring$ -- 43034
+swap$ -- 149
+text.length$ -- 350
+text.prefix$ -- 0
+top$ -- 0
+type$ -- 98
+warning$ -- 0
+while$ -- 617
+width$ -- 0
+write$ -- 128
+(There was 1 error message)

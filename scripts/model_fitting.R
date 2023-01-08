@@ -260,8 +260,49 @@ train <-
   select(-row_id)
 
 counties <- distinct(train, cfips, county, state, census_region)
-
 ground_truth <- select(train, cfips, activity)
+
+train_hts <- train %>%
+  aggregate_key((cfips * state) * census_region, active = sum(active)) %>%
+  filter(!is_aggregated(census_region))
+
+train_hts %>%
+  filter(!is_aggregated(cfips), !is_aggregated(state)) %>%
+  filter(census_region == "Pacific") %>%
+  autoplot() +
+  labs(x = "", y = "Active firms") +
+  scale_y_continuous(guide = "axis_minor", labels = comma_format()) +
+  guides(color = "none") +
+  facet_wrap(~state, scales = "free_y") +
+  theme_clean()
+
+train_hts %>%
+  filter(is_aggregated(cfips), !is_aggregated(state)) %>%
+  autoplot() +
+  labs(x = "", y = "Active firms") +
+  scale_y_continuous(guide = "axis_minor", labels = comma_format()) +
+  guides(color = "none") +
+  facet_wrap(~state, scales = "free_y") +
+  theme_clean()
+
+train_hts %>%
+  filter(is_aggregated(cfips), !is_aggregated(state), !is_aggregated(census_region)) %>%
+  autoplot() +
+  labs(x = "", y = "Active firms") +
+  scale_y_continuous(guide = "axis_minor", labels = comma_format()) +
+  guides(color = "none") +
+  facet_wrap(~census_region, scales = "free_y") +
+  theme_clean()
+
+train_hts %>%
+  filter(is_aggregated(cfips), is_aggregated(state)) %>%
+  autoplot() +
+  labs(x = "", y = "Active firms") +
+  scale_y_continuous(guide = "axis_minor", labels = comma_format()) +
+  guides(color = "none") +
+  scale_color_aaas() +
+  facet_wrap(~census_region, scales = "free_y") +
+  theme_clean()
 
 plan(multisession)
 #' break up training data to observe accuracy
@@ -283,16 +324,17 @@ arima_forecasts <- get_forecasts(arima_fit, h = 8)
 xreg <- train %>% as_tibble() %>% select(activity:pct_it_workers)
 pca <- xreg %>% na.omit() %>% prcomp(xreg)
 
+
+
 #' Fable ensemble forecasting
-fit <- train %>%
+fit <- train_sample %>%
   model(
-    snaive = SNAIVE(activity ~ lag("year")),
+    snaive = SNAIVE(activity),
     tslm = TSLM(activity ~ trend() + season(period = 12)),
-    ets = ETS(activity ~ trend() + season(method = "A") + error(method = "A")),
+    ets = ETS(activity ~ trend() + season(period = 12, method = "A") + error(method = "A")),
     ar  = AR(activity),
     rw = ARIMA(activity ~ pdq(d = 1))
-  ) %>% 
-    mutate(ensemble = (snaive + tslm + ets + ar + rw + arima) / 5)
+  )
 
 tslm_fit %>%
   fitted() %>%
