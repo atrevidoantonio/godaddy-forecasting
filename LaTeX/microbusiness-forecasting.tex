@@ -84,7 +84,22 @@ In 2018, GoDaddy began a project to analyze the economic impact of the microbusi
 \label{sec:sec3}
 \subsection{Forecast Models}
 \label{sec:sec3.1}
-In this section we briefly review the forecasting models to be combined. Our focus is on forecasts of the microbusiness activity as measured by microbusiness density and the number of active microbusiness firms at forecast horizons between 1 and 12 months.
+In this section we briefly review the forecasting models to be combined. Our focus is on forecasts of the microbusiness activity as measured by microbusiness density and the number of active microbusiness firms at forecast horizons between 1 and 12 months. The following model series were considered for the model pool utilized in the production of forecasts:
+\begin{itemize}
+\item Naive models 
+\item AR models
+\item Random walk models
+\item Exponential Smoothing (ETS), which selects the best model
+underlying one of the fifteen exponential smoothing
+methods based on the minimization of a pre-specified
+information criterion \citep{hyndman2002}.
+\item ARIMA models with parameter space search implemented by the \texttt{\footnotesize{Fable}} and \texttt{\footnotesize{forecast}} packages in \texttt{\footnotesize{R}} \citep{hyndman2008}.
+\item Theta models following the method introduced by \cite{assimakopoulos_2000} for the M3 Competition.
+\item Vector Autoregression (VAR) models
+\item Linear time series models
+\end{itemize}
+
+\subsection{Loss Function}
 
 Throughout the analysis, we let $Y$ be the random variable that generates the value to
 be forecast. To begin with, we restrict attention to point forecasts, $f$, which are functions
@@ -95,6 +110,15 @@ The loss function is a function $\mathcal{L}(f, Y, Z)$ that maps the data, $Z$, 
 
 Forecasts are generally viewed as "poor" if they are far from the observed realization of the outcome variable. However, point forecasts aim to estimate not the realization of the outcome but rather a function of its distribution \citep{elliot_2008, barrow2016}. For example, in the case of mean squared loss, this is the variance of $Y$ given $Z$ plus the squared difference between the forecast and the mean of $Y$ given $Z$. Both the conditional mean and variance of $Y$ are functions of $\Theta$ and $z$.
 
+The error measure used in the GoDaddy Kaggle Competition for
+the case of point forecasts is the Symmetric Mean Absolute Percentage Error (sMAPE). This is defined as,
+\begin{equation}
+\text{SMAPE} =\frac{2}{n}\sum\limits_{t=1}^{n}\frac{\big|A_{t} - F_{t}\big|}{\lvert{A_{t}}\rvert + \lvert{F_t}\rvert}
+\end{equation}
+
+sMAPE essentially measures the normalized absolute differences between the predicted and actual values of the series. As a measure it was introduced the overcome the drawbacks of the Mean Absolute Percentage Error (MAPE).\footnote{Mean Absolute Percentage Error (MAPE) is defined as $\frac{1}{n}\sum\limits_{t=1}^{n}\Bigg |\frac{A_{t} - F_{t}}{A_{t}} \Bigg |$. sMAPE has been selected in the past for evaluating the submissions of the M3 and M4 Competitions.}
+sMAPE uses percentage errors that are scale independent, intuitive
+to understand and part of an everyday vocabulary. 
 \subsection{Combination Forecasts}
 \label{sec:sec3.2}
 Rather than rely upon a single model to produce forecasts, we utilize the forecast combination approach to combine a variety of forecast models. Combining forecasts from multiple models often outperforms forecasts from a single
@@ -104,7 +128,7 @@ though point forecasts (without associated measures of uncertainty) provide insu
 
 The initial idea of forecast combination methods dates to the late 1960s, perhaps most notably to \cite{bates_combination_1969}. An extensive literature has built upon the topic, which is comprehensively reviewed and summarized in \cite{elliott_handbook_2013} and by \cite{WANG2022}. For any variable of interest there are (at least) three different ways of forecasting using combinations: (a) combining forecasts from different univariate models, (b) decomposition of the series into components which are modeled and recombined, and (c) modeling with different sets of predictors and combining the forecasts. 
 
-The empirical work supporting the validity of combining forecasts and its superior performance to single selection has been proven throughout the past decades. \cite{clemen89}
+The empirical work supporting the validity of combining forecasts and its superior performance to single selection has been consistently proven throughout the past decades \citep{makridakis2000, makridakis2020}. \cite{clemen89}
 provided an extensive bibliographical review of the early work on the combination of forecasts, and
 then addressed the issue that the arithmetic means often dominate more refined forecast combinations.
 \cite{makridakis83} concluded empirically that a larger number of individual methods included in the simple average scheme would help improve the accuracy of combined forecasts and reduce the variability associated with the selection of methods. While \cite{winkler83} tested five early procedures for estimating weights and found that results pointed towards a simple unweighted average as the superior choice. \cite{stock_comparison_1998} examined the performance of several univariate models for the prediction of US economic time series, finding that combinations of simple univariate models perform better than any other single approach. Other examples include the combination of forecasts from a particular family of models (see, for example \cite{kourentzes_another_2019}) and simple or weighted combinations across multiple different families \citep{petropoulos_simple_2020, montero_2020}. 

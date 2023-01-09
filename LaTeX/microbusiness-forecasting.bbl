@@ -4,11 +4,11 @@
 
 \begin{thebibliography}{xx}
 
-\harvarditem[Assimakopoulos \harvardand\ Nikolopoulos]{V. Assimakopoulos
-  \harvardand\ K. Nikolopoulos}{2000}{assimakopoulos_2000}
-{\bf Assimakopoulos, V., and K. Nikolopoulos.} 2000. ``The Theta Model: A
-  Decomposition Approach to Forecasting.'' {\em International Journal of
-  Forecasting}, 16(4):~521--530. The M3- Competition.
+\harvarditem[Assimakopoulos \harvardand\ Nikolopoulos]{Vasillios Assimakopoulos
+  \harvardand\ Kostas Nikolopoulos}{2000}{assimakopoulos_2000}
+{\bf Assimakopoulos, Vasillios, and Kostas Nikolopoulos.} 2000. ``The Theta
+  Model: A Decomposition Approach to Forecasting.'' {\em International Journal
+  of Forecasting}, 16(4):~521--530. The M3- Competition.
 
 \harvarditem[Barrow \harvardand\ Kourentzes]{Devon~K. Barrow \harvardand\
   Nikolaos Kourentzes}{2016}{barrow2016}
@@ -47,7 +47,7 @@
   Gargano \harvardand\ Allan Timmermann}{2015}{elliott_complete_2015}
 {\bf Elliott, Graham, Antonio Gargano, and Allan Timmermann.} 2015. ``Complete
   Subset Regressions with Large-Dimensional Sets of Predictors.'' {\em Journal
-  of Economic Dynamics and Control}, 54:~86--110.
+  of Economic Dynamics and Control}, 54(1):~86--110.
 
 \harvarditem[Elliott, Granger \harvardand\ Timmermann]{Graham Elliott, C.~W.~J.
   Granger \harvardand\ Allan Timmermann}{2013}{elliott_handbook_2013}
@@ -66,6 +66,19 @@
 {\bf Granger, Clive W.~J., and Ramu Ramanathan.} 1984. ``Improved Methods of
   Combining Forecasts.'' {\em Journal of Forecasting}, 3(2):~197--204.
 
+\harvarditem[Hyndman \harvardand\ Khandakar]{Rob~J. Hyndman \harvardand\
+  Yeasmin Khandakar}{2008}{hyndman2008}
+{\bf Hyndman, Rob~J., and Yeasmin Khandakar.} 2008. ``Automatic Time Series
+  Forecasting: The forecast Package for R.'' {\em Journal of Statistical
+  Software}, 27(3):~1--22.
+
+\harvarditem[Hyndman et~al.]{Rob~J. Hyndman, Anne~B. Koehler, Ralph~D Synder
+  \harvardand\ Simone Grose}{2002}{hyndman2002}
+{\bf Hyndman, Rob~J., Anne~B. Koehler, Ralph~D Synder, and Simone Grose.} 2002.
+  ``A State Space Framework for Automatic Forecasting Using Exponential
+  Smoothing Methods.'' {\em International Journal of Forecasting},
+  18(3):~439--454.
+
 \harvarditem[Kapetanios et~al.]{G. Kapetanios, J. Mitchell, S. Price
   \harvardand\ N. Fawcett}{2015}{KAPETANIOS2015}
 {\bf Kapetanios, G., J. Mitchell, S. Price, and N. Fawcett.} 2015.
@@ -79,10 +92,23 @@
   Forecast Pooling.'' {\em International Journal of Production Economics},
   209:~226--235.
 
+\harvarditem[Makridakis \harvardand\ Hibon]{Sypros Makridakis \harvardand\
+  Mich\`ele Hibon}{2000}{makridakis2000}
+{\bf Makridakis, Sypros, and Mich\`ele Hibon.} 2000. ``The M3 Competition:
+  Results, Conclusions and Implications.'' {\em International Journal of
+  Forecasting}, 16(4):~451--479.
+
 \harvarditem[Makridakis \harvardand\ Winkler]{Sypros Makridakis \harvardand\
   Robert~L. Winkler}{1983}{makridakis83}
 {\bf Makridakis, Sypros, and Robert~L. Winkler.} 1983. ``The Combination of
   Forecasts.'' {\em Management Science}, 29(9):~987--996.
+
+\harvarditem[Makridakis, Spiliotis \harvardand\ Assimakopoulos]{Sypros
+  Makridakis, Evangelos Spiliotis \harvardand\ Vassilios
+  Assimakopoulos}{2020}{makridakis2020}
+{\bf Makridakis, Sypros, Evangelos Spiliotis, and Vassilios Assimakopoulos.}
+  2020. ``The M4 Competition: 100,000 Time Series and 61 Forecasting Methods.''
+  {\em International Journal of Forecasting}, 36(1):~54--74.
 
 \harvarditem[Martin et~al.]{Gael~M. Martin, Rubén Loaiza-Maya, Worapree
   Maneesoonthorn, David~T. Frazier \harvardand\ Andrés

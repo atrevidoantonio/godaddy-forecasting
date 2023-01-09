@@ -1,4 +1,4 @@
-This is pdfTeX, Version 3.141592653-2.6-1.40.24 (MiKTeX 22.10) (preloaded format=pdflatex 2022.11.1)  7 JAN 2023 21:51
+This is pdfTeX, Version 3.141592653-2.6-1.40.24 (MiKTeX 22.10) (preloaded format=pdflatex 2022.11.1)  9 JAN 2023 12:28
 entering extended mode
  restricted \write18 enabled.
  %&-line parsing enabled.
@@ -781,7 +781,7 @@ Package hyperref Info: Link coloring ON on input line 43.
 \openout3 = `microbusiness-forecasting.out'.
 
 \c@lstlisting=\count324
-<company.png, id=35, 257.96375pt x 196.48407pt>
+<company.png, id=39, 257.96375pt x 196.48407pt>
 File: company.png Graphic file (type png)
 <use company.png>
 Package pdftex.def Info: company.png  used on input line 52.
@@ -840,15 +840,15 @@ LaTeX Font Warning: Font shape `T1/ntxtlf/sb/n' undefined
 
 
 LaTeX Font Warning: Font shape `T1/ntxtlf/sb/n' undefined
-(Font)              using `T1/ntxtlf/b/n' instead on input line 6.
-
-
-LaTeX Font Warning: Font shape `T1/ntxtlf/sb/n' undefined
 (Font)              using `T1/ntxtlf/b/n' instead on input line 7.
 
 
 LaTeX Font Warning: Font shape `T1/ntxtlf/sb/n' undefined
 (Font)              using `T1/ntxtlf/b/n' instead on input line 8.
+
+
+LaTeX Font Warning: Font shape `T1/ntxtlf/sb/n' undefined
+(Font)              using `T1/ntxtlf/b/n' instead on input line 9.
 
 )
 \tf@toc=\write4
@@ -881,42 +881,74 @@ Package pdftex.def Info: company.png  used on input line 83.
  [2]
 LaTeX Font Info:    Font shape `T1/qhv/m/n' will be
 (Font)              scaled to size 13.53603pt on input line 85.
+LaTeX Font Info:    Font shape `T1/ntxtlf/m/n' will be
+(Font)              scaled to size 17.28pt on input line 89.
+LaTeX Font Info:    Trying to load font information for TS1+ntxtlf on input lin
+e 89.
+
+(C:\Users\anthonyp\AppData\Local\Programs\MiKTeX\tex/latex/newtx\ts1ntxtlf.fd
+File: ts1ntxtlf.fd 2015/01/18 v1.0 fd file for TS1/ntxtlf
+)
+LaTeX Font Info:    Font shape `TS1/ntxtlf/m/n' will be
+(Font)              scaled to size 17.28pt on input line 89.
+LaTeX Font Info:    Trying to load font information for T1+IBMPlexMono-TLF on i
+nput line 96.
+
+(C:\Users\anthonyp\AppData\Local\Programs\MiKTeX\tex/latex/plex\t1ibmplexmono-t
+lf.fd
+File: T1IBMPlexMono-TLF.fd 2019/12/06 (autoinst) Font definitions for T1/IBMPle
+xMono-TLF.
+)
+LaTeX Font Info:    Font shape `T1/IBMPlexMono-TLF/m/n' aliased to
+(Font)              `T1/IBMPlexMono-TLF/regular/n' on input line 96.
+LaTeX Font Info:    Font shape `T1/IBMPlexMono-TLF/regular/n' will be
+(Font)              scaled to size 12.0pt on input line 96.
+LaTeX Font Info:    Font shape `T1/IBMPlexMono-TLF/m/n' aliased to
+(Font)              `T1/IBMPlexMono-TLF/regular/n' on input line 96.
+LaTeX Font Info:    Font shape `T1/IBMPlexMono-TLF/regular/n' will be
+(Font)              scaled to size 10.0pt on input line 96.
+
+Overfull \hbox (6.34108pt too wide) in paragraph at lines 97--98
+[]\T1/ntxtlf/m/n/12 Theta mod-els fol-low-ing the method in-tro-duced by [][]As
+-si-makopou-los and Nikolopou-
+ []
+
+File: company.png Graphic file (type png)
+<use company.png>
+Package pdftex.def Info: company.png  used on input line 115.
+(pdftex.def)             Requested size: 42.67912pt x 32.5054pt.
+[3]
+LaTeX Font Info:    Font shape `T1/ntxtlf/m/n' will be
+(Font)              scaled to size 6.0pt on input line 116.
 LaTeX Font Info:    Trying to load font information for T1+ntxsups on input lin
-e 101.
+e 119.
 
 (C:\Users\anthonyp\AppData\Local\Programs\MiKTeX\tex/latex/newtx\t1ntxsups.fd
 File: t1ntxsups.fd 2015/01/17 v1.0
 )
 LaTeX Font Info:    Font shape `T1/ntxsups/m/n' will be
-(Font)              scaled to size 12.0pt on input line 101.
+(Font)              scaled to size 12.0pt on input line 119.
 LaTeX Font Info:    Font shape `T1/ntxsups/m/n' will be
-(Font)              scaled to size 10.0pt on input line 102.
+(Font)              scaled to size 10.0pt on input line 119.
 File: company.png Graphic file (type png)
 <use company.png>
-Package pdftex.def Info: company.png  used on input line 106.
+Package pdftex.def Info: company.png  used on input line 135.
 (pdftex.def)             Requested size: 42.67912pt x 32.5054pt.
 
-[3]
+[4]
 File: company.png Graphic file (type png)
 <use company.png>
-Package pdftex.def Info: company.png  used on input line 124.
-(pdftex.def)             Requested size: 42.67912pt x 32.5054pt.
- [4]
-LaTeX Font Info:    Font shape `T1/ntxtlf/m/n' will be
-(Font)              scaled to size 6.0pt on input line 150.
-File: company.png Graphic file (type png)
-<use company.png>
-Package pdftex.def Info: company.png  used on input line 155.
+Package pdftex.def Info: company.png  used on input line 157.
 (pdftex.def)             Requested size: 42.67912pt x 32.5054pt.
  [5]
 File: company.png Graphic file (type png)
 <use company.png>
-Package pdftex.def Info: company.png  used on input line 159.
+Package pdftex.def Info: company.png  used on input line 183.
 (pdftex.def)             Requested size: 42.67912pt x 32.5054pt.
  [6]
 File: company.png Graphic file (type png)
 <use company.png>
-Package pdftex.def Info: company.png  used on input line 161.
+Package pdftex.def Info: company.png  used on input line 185.
 (pdftex.def)             Requested size: 42.67912pt x 32.5054pt.
  [7] (microbusiness-forecasting.bbl
 File: company.png Graphic file (type png)
@@ -926,59 +958,68 @@ Package pdftex.def Info: company.png  used on input line 5.
  [8]
 LaTeX Font Info:    Font shape `T1/ntxtlf/m/it' will be
 (Font)              scaled to size 12.0pt on input line 10.
-
-Underfull \hbox (badness 1540) in paragraph at lines 97--101
+File: company.png Graphic file (type png)
+<use company.png>
+Package pdftex.def Info: company.png  used on input line 100.
+(pdftex.def)             Requested size: 42.67912pt x 32.5054pt.
+ [9]
+Underfull \hbox (badness 1540) in paragraph at lines 123--127
 []\T1/ntxtlf/b/n/12 Montero-Manso, Pablo, George Athana-sopou-los, Rob J. Hyn-d
 -man, and
  []
 
-File: company.png Graphic file (type png)
-<use company.png>
-Package pdftex.def Info: company.png  used on input line 101.
-(pdftex.def)             Requested size: 42.67912pt x 32.5054pt.
-[9]) 
+) 
 AED: lastpage setting LastPage
 File: company.png Graphic file (type png)
 <use company.png>
-Package pdftex.def Info: company.png  used on input line 165.
+Package pdftex.def Info: company.png  used on input line 189.
 (pdftex.def)             Requested size: 42.67912pt x 32.5054pt.
 [10] (microbusiness-forecasting.aux)
 Package rerunfilecheck Info: File `microbusiness-forecasting.out' has not chang
 ed.
-(rerunfilecheck)             Checksum: 48F4236E5BC0B69E9021D6032C648F26;808.
+(rerunfilecheck)             Checksum: 751CDE101FFDEEC018D0707FA3BB654D;933.
  ) 
 Here is how much of TeX's memory you used:
- 17772 strings out of 475385
- 290039 string characters out of 2775491
- 633436 words of memory out of 3000000
- 38771 multiletter control sequences out of 15000+600000
- 521242 words of font info for 88 fonts, out of 8000000 for 9000
+ 17931 strings out of 475385
+ 294207 string characters out of 2775491
+ 635825 words of memory out of 3000000
+ 38914 multiletter control sequences out of 15000+600000
+ 525352 words of font info for 93 fonts, out of 8000000 for 9000
  1141 hyphenation exceptions out of 8191
- 87i,15n,91p,981b,624s stack positions out of 10000i,1000n,20000p,200000b,80000s
+ 87i,15n,91p,957b,624s stack positions out of 10000i,1000n,20000p,200000b,80000s
 {C:/Users/anthonyp/AppData/Local/Programs/MiKTeX/fonts/enc/dvips/newtx/ntx-ec
 -tlf.enc}{C:/Users/anthonyp/AppData/Local/Programs/MiKTeX/fonts/enc/dvips/newtx
 /ntxsups_t1.enc}{C:/Users/anthonyp/AppData/Local/Programs/MiKTeX/fonts/enc/dvip
-s/tex-gyre/q-ec.enc}<C:/Users/anthonyp/AppData/Local/Programs/MiKTeX/fonts/type
-1/public/amsfonts/cmextra/cmbsy8.pfb><C:/Users/anthonyp/AppData/Local/Programs/
-MiKTeX/fonts/type1/public/amsfonts/cm/cmbx12.pfb><C:/Users/anthonyp/AppData/Loc
-al/Programs/MiKTeX/fonts/type1/public/amsfonts/cm/cmex10.pfb><C:/Users/anthonyp
-/AppData/Local/Programs/MiKTeX/fonts/type1/public/amsfonts/cm/cmmi12.pfb><C:/Us
-ers/anthonyp/AppData/Local/Programs/MiKTeX/fonts/type1/public/amsfonts/cm/cmmi8
-.pfb><C:/Users/anthonyp/AppData/Local/Programs/MiKTeX/fonts/type1/public/amsfon
-ts/cm/cmmib10.pfb><C:/Users/anthonyp/AppData/Local/Programs/MiKTeX/fonts/type1/
-public/amsfonts/cm/cmr12.pfb><C:/Users/anthonyp/AppData/Local/Programs/MiKTeX/f
-onts/type1/public/amsfonts/cm/cmr8.pfb><C:/Users/anthonyp/AppData/Local/Program
-s/MiKTeX/fonts/type1/public/amsfonts/cm/cmsy10.pfb><C:/Users/anthonyp/AppData/L
-ocal/Programs/MiKTeX/fonts/type1/public/amsfonts/cm/cmsy8.pfb><C:/Users/anthony
-p/AppData/Local/Programs/MiKTeX/fonts/type1/public/newtx/ntxsups-Regular.pfb><C
-:/Users/anthonyp/AppData/Local/Programs/MiKTeX/fonts/type1/public/tex-gyre/qhvr
-.pfb><C:/Users/anthonyp/AppData/Local/Programs/MiKTeX/fonts/type1/public/newtx/
-ztmb.pfb><C:/Users/anthonyp/AppData/Local/Programs/MiKTeX/fonts/type1/public/ne
-wtx/ztmr.pfb><C:/Users/anthonyp/AppData/Local/Programs/MiKTeX/fonts/type1/publi
-c/newtx/ztmri.pfb>
-Output written on microbusiness-forecasting.pdf (12 pages, 310088 bytes).
+s/plex/plx_x4zmfh.enc}{C:/Users/anthonyp/AppData/Local/Programs/MiKTeX/fonts/en
+c/dvips/tex-gyre/q-ts1.enc}{C:/Users/anthonyp/AppData/Local/Programs/MiKTeX/fon
+ts/enc/dvips/tex-gyre/q-ec.enc}<C:/Users/anthonyp/AppData/Local/Programs/MiKTeX
+/fonts/type1/ibm/plex/IBMPlexMono.pfb><C:/Users/anthonyp/AppData/Local/Programs
+/MiKTeX/fonts/type1/public/amsfonts/cmextra/cmbsy8.pfb><C:/Users/anthonyp/AppDa
+ta/Local/Programs/MiKTeX/fonts/type1/public/amsfonts/cm/cmbx12.pfb><C:/Users/an
+thonyp/AppData/Local/Programs/MiKTeX/fonts/type1/public/amsfonts/cm/cmex10.pfb>
+<C:/Users/anthonyp/AppData/Local/Programs/MiKTeX/fonts/type1/public/amsfonts/cm
+/cmmi12.pfb><C:/Users/anthonyp/AppData/Local/Programs/MiKTeX/fonts/type1/public
+/amsfonts/cm/cmmi5.pfb><C:/Users/anthonyp/AppData/Local/Programs/MiKTeX/fonts/t
+ype1/public/amsfonts/cm/cmmi7.pfb><C:/Users/anthonyp/AppData/Local/Programs/MiK
+TeX/fonts/type1/public/amsfonts/cm/cmmi8.pfb><C:/Users/anthonyp/AppData/Local/P
+rograms/MiKTeX/fonts/type1/public/amsfonts/cm/cmmib10.pfb><C:/Users/anthonyp/Ap
+pData/Local/Programs/MiKTeX/fonts/type1/public/amsfonts/cm/cmr12.pfb><C:/Users/
+anthonyp/AppData/Local/Programs/MiKTeX/fonts/type1/public/amsfonts/cm/cmr7.pfb>
+<C:/Users/anthonyp/AppData/Local/Programs/MiKTeX/fonts/type1/public/amsfonts/cm
+/cmr8.pfb><C:/Users/anthonyp/AppData/Local/Programs/MiKTeX/fonts/type1/public/a
+msfonts/cm/cmsy10.pfb><C:/Users/anthonyp/AppData/Local/Programs/MiKTeX/fonts/ty
+pe1/public/amsfonts/cm/cmsy7.pfb><C:/Users/anthonyp/AppData/Local/Programs/MiKT
+eX/fonts/type1/public/amsfonts/cm/cmsy8.pfb><C:/Users/anthonyp/AppData/Local/Pr
+ograms/MiKTeX/fonts/type1/public/newtx/ntxsups-Regular.pfb><C:/Users/anthonyp/A
+ppData/Local/Programs/MiKTeX/fonts/type1/public/tex-gyre/qhvr.pfb><C:/Users/ant
+honyp/AppData/Local/Programs/MiKTeX/fonts/type1/public/tex-gyre/qtmr.pfb><C:/Us
+ers/anthonyp/AppData/Local/Programs/MiKTeX/fonts/type1/public/newtx/ztmb.pfb><C
+:/Users/anthonyp/AppData/Local/Programs/MiKTeX/fonts/type1/public/newtx/ztmr.pf
+b><C:/Users/anthonyp/AppData/Local/Programs/MiKTeX/fonts/type1/public/newtx/ztm
+ri.pfb>
+Output written on microbusiness-forecasting.pdf (12 pages, 374259 bytes).
 PDF statistics:
- 308 PDF objects out of 1000 (max. 8388607)
- 50 named destinations out of 1000 (max. 500000)
- 70 words of extra memory for PDF output out of 10000 (max. 10000000)
+ 366 PDF objects out of 1000 (max. 8388607)
+ 57 named destinations out of 1000 (max. 500000)
+ 78 words of extra memory for PDF output out of 10000 (max. 10000000)
 
