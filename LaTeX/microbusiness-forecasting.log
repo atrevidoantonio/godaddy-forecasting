@@ -1,4 +1,4 @@
-This is pdfTeX, Version 3.141592653-2.6-1.40.24 (MiKTeX 22.10) (preloaded format=pdflatex 2022.11.1)  7 JAN 2023 20:58
+This is pdfTeX, Version 3.141592653-2.6-1.40.24 (MiKTeX 22.10) (preloaded format=pdflatex 2022.11.1)  7 JAN 2023 21:51
 entering extended mode
  restricted \write18 enabled.
  %&-line parsing enabled.
@@ -902,21 +902,28 @@ File: company.png Graphic file (type png)
 Package pdftex.def Info: company.png  used on input line 124.
 (pdftex.def)             Requested size: 42.67912pt x 32.5054pt.
  [4]
+LaTeX Font Info:    Font shape `T1/ntxtlf/m/n' will be
+(Font)              scaled to size 6.0pt on input line 150.
 File: company.png Graphic file (type png)
 <use company.png>
-Package pdftex.def Info: company.png  used on input line 144.
+Package pdftex.def Info: company.png  used on input line 155.
 (pdftex.def)             Requested size: 42.67912pt x 32.5054pt.
  [5]
 File: company.png Graphic file (type png)
 <use company.png>
-Package pdftex.def Info: company.png  used on input line 146.
+Package pdftex.def Info: company.png  used on input line 159.
 (pdftex.def)             Requested size: 42.67912pt x 32.5054pt.
- [6] (microbusiness-forecasting.bbl
+ [6]
+File: company.png Graphic file (type png)
+<use company.png>
+Package pdftex.def Info: company.png  used on input line 161.
+(pdftex.def)             Requested size: 42.67912pt x 32.5054pt.
+ [7] (microbusiness-forecasting.bbl
 File: company.png Graphic file (type png)
 <use company.png>
 Package pdftex.def Info: company.png  used on input line 5.
 (pdftex.def)             Requested size: 42.67912pt x 32.5054pt.
- [7]
+ [8]
 LaTeX Font Info:    Font shape `T1/ntxtlf/m/it' will be
 (Font)              scaled to size 12.0pt on input line 10.
 
@@ -929,25 +936,25 @@ File: company.png Graphic file (type png)
 <use company.png>
 Package pdftex.def Info: company.png  used on input line 101.
 (pdftex.def)             Requested size: 42.67912pt x 32.5054pt.
-[8]) 
+[9]) 
 AED: lastpage setting LastPage
 File: company.png Graphic file (type png)
 <use company.png>
-Package pdftex.def Info: company.png  used on input line 150.
+Package pdftex.def Info: company.png  used on input line 165.
 (pdftex.def)             Requested size: 42.67912pt x 32.5054pt.
-[9] (microbusiness-forecasting.aux)
+[10] (microbusiness-forecasting.aux)
 Package rerunfilecheck Info: File `microbusiness-forecasting.out' has not chang
 ed.
 (rerunfilecheck)             Checksum: 48F4236E5BC0B69E9021D6032C648F26;808.
  ) 
 Here is how much of TeX's memory you used:
- 17769 strings out of 475385
- 290005 string characters out of 2775491
- 633432 words of memory out of 3000000
- 38770 multiletter control sequences out of 15000+600000
- 518434 words of font info for 87 fonts, out of 8000000 for 9000
+ 17772 strings out of 475385
+ 290039 string characters out of 2775491
+ 633436 words of memory out of 3000000
+ 38771 multiletter control sequences out of 15000+600000
+ 521242 words of font info for 88 fonts, out of 8000000 for 9000
  1141 hyphenation exceptions out of 8191
- 87i,14n,91p,981b,624s stack positions out of 10000i,1000n,20000p,200000b,80000s
+ 87i,15n,91p,981b,624s stack positions out of 10000i,1000n,20000p,200000b,80000s
 {C:/Users/anthonyp/AppData/Local/Programs/MiKTeX/fonts/enc/dvips/newtx/ntx-ec
 -tlf.enc}{C:/Users/anthonyp/AppData/Local/Programs/MiKTeX/fonts/enc/dvips/newtx
 /ntxsups_t1.enc}{C:/Users/anthonyp/AppData/Local/Programs/MiKTeX/fonts/enc/dvip
@@ -969,9 +976,9 @@ p/AppData/Local/Programs/MiKTeX/fonts/type1/public/newtx/ntxsups-Regular.pfb><C
 ztmb.pfb><C:/Users/anthonyp/AppData/Local/Programs/MiKTeX/fonts/type1/public/ne
 wtx/ztmr.pfb><C:/Users/anthonyp/AppData/Local/Programs/MiKTeX/fonts/type1/publi
 c/newtx/ztmri.pfb>
-Output written on microbusiness-forecasting.pdf (11 pages, 304244 bytes).
+Output written on microbusiness-forecasting.pdf (12 pages, 310088 bytes).
 PDF statistics:
- 301 PDF objects out of 1000 (max. 8388607)
- 48 named destinations out of 1000 (max. 500000)
+ 308 PDF objects out of 1000 (max. 8388607)
+ 50 named destinations out of 1000 (max. 500000)
  70 words of extra memory for PDF output out of 10000 (max. 10000000)
 
