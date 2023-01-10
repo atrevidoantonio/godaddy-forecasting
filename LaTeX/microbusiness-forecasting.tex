@@ -21,7 +21,7 @@ a4paper, % Paper size, use either a4paper or letterpaper
 ]{CascadeAnalyticsWPS}
 
 %\addbibresource{sample.bib} % BibLaTeX bibliography file
-\usepackage[authoryear]{natbib}
+\usepackage{natbib}
 \usepackage{bm}
 \bibliographystyle{aea}
 \renewcommand{\bibsection}{\section{References}}
@@ -96,7 +96,9 @@ information criterion \citep{hyndman2002}.
 \item ARIMA models with parameter space search implemented by the \texttt{\footnotesize{Fable}} and \texttt{\footnotesize{forecast}} packages in \texttt{\footnotesize{R}} \citep{hyndman2008}.
 \item Theta models following the method introduced by \cite{assimakopoulos_2000} for the M3 Competition.
 \item Vector Autoregression (VAR) models
-\item Linear time series models
+\item Linear time series models, linear regression fits of a series
+on various types of a trend (constant, linear,
+logarithmic) [stats::lm]
 \end{itemize}
 
 \subsection{Loss Function}

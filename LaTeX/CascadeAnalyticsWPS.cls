@@ -319,3 +319,5 @@
 \newcommand{\reportsubtitle}[1]{\renewcommand{\reportsubtitle}{#1}}
 \newcommand{\reportauthors}[1]{\renewcommand{\reportauthors}{#1}}
 \newcommand{\reportdate}[1]{\renewcommand{\reportdate}{#1}}
+
+ \renewcommand{\labelitemi}{\small$\circ$}

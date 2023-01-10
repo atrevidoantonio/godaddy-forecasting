@@ -68,7 +68,7 @@ fix_names <- function(x) gsub("[\\%,]", "", x)
 #' @return A tibble with the forecast data
 get_forecasts <- function(mbl, h = 4, intervals = TRUE) {
   if (intervals) {
-    fct <- forecast(mbl, h = h) %>%
+    fct <- fabletools::forecast(mbl, h = h) %>%
       hilo(level = c(80, 95)) %>%
       unpack_hilo(c("80%", "95%"), names_repair = fix_names)
   } else {
@@ -233,10 +233,18 @@ fit <- train_sample %>%
     tslm = TSLM(activity ~ trend() + season(period = 12)),
     ets = ETS(activity ~ trend() + season(period = 12, method = "A") + error(method = "A")),
     ar  = AR(activity),
+    arima = ARIMA(activity),
     rw = ARIMA(activity ~ pdq(d = 1))
   )
 #' combine models
 fit <- mutate(fit, comb = (snaive + tslm + ets + ar + rw)/5)
+
+train_fcts <- fit %>% fabletools::forecast(h = 8) %>%
+  hilo(level = c(80, 95)) %>%
+  unpack_hilo(c("80%", "95%"), names_repair = fix_names)
+
+model_fits <- refit(fit, train)
+
 #' generate probabilistic forecast for combination model 
 fit_futures <- fit %>%
   # Generate 1000 future sample paths
