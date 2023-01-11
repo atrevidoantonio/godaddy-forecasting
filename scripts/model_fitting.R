@@ -229,7 +229,7 @@ pca <- xreg %>% na.omit() %>% prcomp(xreg)
 #' Fable combination forecasting
 fit <- train_sample %>%
   model(
-    snaive = SNAIVE(activity),
+    nmean = MEAN(activity),
     tslm = TSLM(activity ~ trend() + season(period = 12)),
     ets = ETS(activity ~ trend() + season(period = 12, method = "A") + error(method = "A")),
     ar  = AR(activity),
@@ -243,22 +243,61 @@ train_fcts <- fit %>% fabletools::forecast(h = 8) %>%
   hilo(level = c(80, 95)) %>%
   unpack_hilo(c("80%", "95%"), names_repair = fix_names)
 
-model_fits <- refit(fit, train)
+train_fcts %>%
+  filter(.model == "comb") %>%
+  hilo(level = 95) %>%
+  unpack_hilo("95%", names_repair = fix_names)
 
-#' generate probabilistic forecast for combination model 
-fit_futures <- fit %>%
-  # Generate 1000 future sample paths
-  generate(h = "2 years", times = 1000) %>%
-  # Compute forecast distributions from future sample paths
+model_fits <- fit %>% select(-comb) %>%
+  refit(train) %>%
+  mutate(comb = (snaive + tslm + ets + ar + rw)/5)
+
+
+# Pull out forecast distributions for calculations
+fc_a <- model_fits %>% select(a) %>% forecast() %>% pull(value)
+fc_b <- model_fits %>% select(b) %>% forecast() %>% pull(value)
+fc_comb <- model_fits %>% select(comb) %>% forecast() %>% pull(value)
+
+# Obtain correlation for component model residuals
+resid <- model_fits %>% 
+  select(snaive:rw) %>% 
+  residuals() %>% 
+  pivot_wider(names_from = ".model", values_from = ".resid")
+  with(cbind(snaive:rw))
+
+resid %>%
   as_tibble() %>%
+  with(select(snaive:rw))
+
+cor <- cov2cor(var(resid))
+
+# Compute combined (a+b) forecast variance
+sigma <- sqrt(cbind(variance(fc_a), variance(fc_b)))
+fc_var <- diag(sigma %*% cor %*% t(sigma))
+
+# Compute combined (a+b) forecast mean
+fc_mu <- mean(fc_a) + mean(fc_b)
+
+# Create combined (a+b)/2 forecast distribution
+fc_comb_manual <- dist_normal(fc_mu, sd = sqrt(fc_var))/2
+
+waldo::compare(fc_comb, fc_comb_manual, tolerance = 1e-10)
+
+futures <-
+  model_fits %>%
+  select(-c(snaive, ar)) %>%
+  generate(h = 12, times = 1000) %>%
+  # Compute forecast distributions from future sample paths
+  as_tibble() 
   group_by(ym, .model) %>%
   summarise(
     dist = distributional::dist_sample(list(.sim))
   ) %>%
-  ungroup() %>%
+  ungroup()
   # Create fable object
   as_fable(index = ym, key = .model,
            distribution = dist, response = "activity")
+
 
 ets_model <- combine_model_fits(ets_fit, ets_forecasts)
 tslm_model <- combine_model_fits(tslm_fit, tslm_forecasts)

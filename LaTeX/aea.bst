@@ -99,7 +99,7 @@ FUNCTION {emphasize}
 FUNCTION {embolden}
 { duplicate$ empty$
     { pop$ "" }
-    { "{\bf " swap$ * "}" * }
+    { "{\sc " swap$ * "}" * }
   if$
 }
 
