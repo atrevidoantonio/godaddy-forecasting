@@ -1,8 +1,10 @@
 .Rproj.user
 .Rhistory
 .RData
+.RDataTmp
 .Ruserdata
 .log
+.out
 .aux
 .blg
 .bbl
