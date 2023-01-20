@@ -6,7 +6,6 @@ library(RColorBrewer)
 library(ggthemes)
 library(future)
 library(ggpubr)
-library(ggsci)
 library(scales)
 library(tibbletime)
 library(ForecastComb)
@@ -18,11 +17,14 @@ library(lubridate)
 library(ggh4x)
 library(hrbrthemes)
 library(tsibble)
+library(fable.prophet)
 library(fable)
 library(fabletools)
 library(feasts)
 library(seasonal)
 library(zoo)
+
+source("./scripts/forecast_helpers.R")
 
 ##### DATA #####
 train <- read_csv("./data/processed/enriched_train.csv")
@@ -34,8 +36,29 @@ train <-
   fill_gaps() %>%
   select(-row_id)
 
+train <-
+  train %>%
+  group_by(cfips) %>%
+  imputeTS::na_locf()
+
+#' join covid data
+train <- left_join(train, covid_counties) 
+
+train <- train %>%
+  imputeTS::na_replace(0)
+
+train_end <- max(train$date)
+test_end <- max(ymd(test$first_day_of_month))
+dmonths <-  floor(as.numeric(difftime(test_end, train_end, units = "weeks"))/4)
+
+
 counties <- distinct(train, cfips, county, state, census_region)
 ground_truth <- select(train, cfips, activity)
+
+##### Feature Engineering ####
+
+#' create lags for activity
+
 
 train_hts <- train %>%
   aggregate_key((cfips * state) * census_region, active = sum(active)) %>%
@@ -96,24 +119,10 @@ forecasts <- model_fits %>%
 #' put together
 input_data <- foreccomb(actual, forecasts)
 
-model1 <- comb_SA(input_data)
-model2 <- comb_InvW(input_data)
-model3 <- comb_CLS(input_data)
-model4 <- comb_OLS(input_data)
-model5 <- comb_EIG1(input_data)
-model6 <- comb_EIG2(input_data)
-
-Metrics::smape(actual = ground_truth$activity, model1$Fitted)
-Metrics::smape(actual = ground_truth$activity, model2$Fitted)
-Metrics::smape(actual = ground_truth$activity, model3$Fitted)
-Metrics::smape(actual = ground_truth$activity, model4$Fitted)
-Metrics::smape(actual = ground_truth$activity, model5$Fitted)
-Metrics::smape(actual = ground_truth$activity, model6$Fitted)
-
 #' combine models
 fit <- mutate(fit, comb = (nmean + theta + tslm + ets + arima + rw)/6)
 
-train_fcts <- fit %>% fabletools::forecast(h = 8) %>%
+train_fcts <- fit %>% fabletools::forecast(h = dmonths) %>%
   hilo(level = c(80, 95)) %>%
   unpack_hilo(c("80%", "95%"), names_repair = fix_names)
 
@@ -142,15 +151,21 @@ model_tbl <-
   left_join(ground_truth) %>%
   mutate(model_type = "Training")
 
+nnetar_fit <- train %>%
+  model(nnetar = NNETAR(activity))
+
+arima_fit <- train %>%
+  model(arima = ARIMA(activity ~ pdq(0, 1, 0) ~ PDQ(0, 1, 0, period = 12)))
+
 #' produce point forecasts
 fcts <-
   model_refits %>%
-  forecast(h = 8)
+  forecast(h = dmonths)
 
 #' Monte Carlo simulation to produce probabilistic forecasts
 futures <-
   model_refits %>%
-  generate(h = 8, times = 1000) %>%
+  generate(h = dmonths, times = 1000) %>%
   # Compute forecast distributions from future sample paths
   as_tibble() 
   group_by(ym, .model) %>%
@@ -227,11 +242,35 @@ fct_values <-
   bind_rows(model_tbl) %>%
   arrange(cfips, .model, ym)
 
-
-submission <- select(fct_tbl, ym, cfips, microbusiness_density = comb_auto) %>%
+submission <-
+  select(fct_tbl, ym, cfips, microbusiness_density = comb_auto) %>%
   mutate(first_day_of_month = lubridate::ym(ym)) %>%
-  transmute(row_id = paste(cfips, first_day_of_month, sep = "_"), microbusiness_density) %>%
-  inner_join(test) 
+  transmute(row_id = paste(cfips, first_day_of_month, sep = "_"),
+            microbusiness_density)
+
+nnetar_fcts <-
+  nnetar_fit %>%
+  forecast(h = dmonths) %>%
+  as_tibble() %>%
+  transmute(
+    row_id = paste(cfips, lubridate::ym(ym), sep = "_"),
+    microbusiness_density = .mean)
+
+theta_fcts <-
+  fcts %>%
+  as_tibble() %>%
+  filter(.model == "theta") %>%
+  transmute(
+    row_id = paste(cfips, lubridate::ym(ym), sep = "_"),
+    microbusiness_density = .mean
+  )
+
+save_data(ets_fcts, path = "output")
+save_data(theta_fcts, path = "output")
+save_data(tslm_fcts, path = "output")
+save_data(arima_fcts, path = "output")
+save_data(fct_values, path = "output")
+save_data(submission, path = "output")
 
 #' save training models
 save_model(model_refits)

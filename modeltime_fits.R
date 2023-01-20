@@ -1,62 +1,27 @@
+library(tidymodels)
 library(parsnip)
+library(timetk)
 library(modeltime)
+source("./scripts/forecast_helpers.R")
 
-wa_train <- train %>%
-  filter(state == "Washington") %>%
-  as_tibble() %>%
-  select(cfips, activity) %>%
-  group_split(cfips)
-
-wa_train <-
-  wa_train %>% map(
-    .f = function(x) {
-      x %>%
-        select(activity) %>%
-        ts(
-          start = as.Date("2019-08-01"),
-          end = as.Date("2022-10-01"),
-          frequency = 12
-        )
-    }
-  )
-
-arima_fit <- function(data){
-   fit <- forecast::auto.arima(data, stationary = TRUE)
-   return(fit)
-}
-
-arima_fit <- function(data){
-  ts_data <- ts(train$activity, freq = 12)
-  model <- forecast::auto.arima(ts_data, stationary = TRUE, biasadj = TRUE)
-  return(model)
-}
-
-nested_tbl <- plyr::l_ply(wa_train, arima_fit, .progress = "text")
-
-#' 
-wa_train <- filter(train_sample, state == "Washington")
-wa_test <- filter(train, state == "Washington", date > "2022-07-01") %>% as_tibble()
-wa_full <- filter(train, state == "Washington") %>% as_tibble()
-
-nested_tbl <-
-  wa_train <- filter(train_sample, state == "Washington") %>%
-  group_by(cfips) %>%
-  nest()
-
+df <- read_csv("./data/processed/enriched_train.csv") %>%
+  mutate(month_label = month(date, label = TRUE),
+         year = year(date))
+  
 #' modeltime workflow for fitting ARIMA and ARIMA with XGBOOST errors
-nested_data_tbl <- wa_full %>%
-  # 1. Extending: We'll predict 12 months into the future.
+nested_data_tbl <- df %>%
+  # 1. Extending: forecast 8 months
   extend_timeseries(
     .id_var        = cfips,
     .date_var      = date,
-    .length_future = 12
+    .length_future = 8
   ) %>%
   # 2. Nesting: We'll group by id, and create a future dataset
-  #    that forecasts 12 weeks of extended data and
+  #    that forecasts 8 weeks of extended data and
   #    an actual dataset that contains 39 weeks
   nest_timeseries(
     .id_var        = cfips,
-    .length_future = 12,
+    .length_future = 8,
     .length_actual = 39
   ) %>%
   # 3. Splitting: We'll take the actual data and create splits
@@ -67,7 +32,12 @@ nested_data_tbl <- wa_full %>%
     cumulative = TRUE
   )
 
-rec <- recipe(activity ~ date, extract_nested_train_split(nested_data_tbl))
+rec <-
+  recipe(
+    activity ~ date + year + month_label,
+    extract_nested_train_split(nested_data_tbl)
+  ) %>%
+  step_dummy(all_nominal_predictors(), one_hot = TRUE)
 
 wkfl_arima <- workflow() %>%
   add_model(
@@ -91,11 +61,10 @@ nested_modeltime_tbl <- modeltime_nested_fit(
   # Nested data 
   nested_data = nested_data_tbl,
   # Add workflows
-  wkfl_arima,
-  wkfl_prophet
+  wkfl_arima
 )
 
-nested_modeltime_tbl %>% 
+nested_modeltime_tbl %>%
   extract_nested_test_accuracy()
 
 nested_modeltime_refit_tbl <- nested_modeltime_tbl %>%
@@ -103,12 +72,14 @@ nested_modeltime_refit_tbl <- nested_modeltime_tbl %>%
     control = control_nested_refit(verbose = TRUE)
   )
 
-nested_modeltime_tbl %>%
-  extract_nested
-
 modeltime_fits <-
   nested_modeltime_refit_tbl %>%
   extract_nested_future_forecast()
 
-nested_modeltime_refit_tbl %>%
-  extract()
+arima_boost <- filter(modeltime_fits, .key == "prediction") %>%
+  transmute(
+    row_id = paste(cfips, lubridate::ymd(.index), sep = "_"),
+    microbusiness_density = .value
+  )
+
+save_data(arima_boost, path = "output")

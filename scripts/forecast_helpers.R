@@ -159,3 +159,53 @@ fit_models <- function(data, model_spec) {
     model$name)
   return(fit_list)
 }
+
+save_data <- function(tibble, path = "processed") {
+  valid_paths <- c("processed", "output", "general")
+  if (!(path %in% valid_paths)) {
+    stop("Invalid path. Must be one of: processed, output, general.")
+  }
+  name <- deparse(substitute(tibble))
+  readr::write_csv(tibble, paste0("./data/", path, "/", name, ".csv"))
+}
+
+
+format_fcts <- function(fcts, forecast = FALSE) {
+  if (forecast == FALSE) {
+    fct_submission <- fcts %>%
+      as_tibble() %>%
+      transmute(
+        row_id = paste(cfips, lubridate::ym(ym), sep = "_"),
+        microbusiness_density = .mean
+      )
+  } else {
+    fct_submission <- fcts %>%
+      forecast(h = dmonths) %>%
+      as_tibble() %>%
+      transmute(
+        row_id = paste(cfips, lubridate::ym(ym), sep = "_"),
+        microbusiness_density = .mean
+      )
+  }
+  return(fct_submission)
+}
+
+forecast_predictors <-
+  function(data,
+           column,
+           h = dmonths,
+           method = ETS,
+           rename_output = TRUE,
+           ...) {
+    model <- model(fit = method(data[, column]))
+    forecast_result <- forecast(model, h = h) %>%
+      as_tibble()
+    if (rename_output) {
+      forecast_result <- forecast_result %>%
+        select(ym, cfips, state, census_region, !!as.name(column) := .mean)
+    }
+    return(forecast_result)
+  }
+
+predictors <- select(train_subset, active:cases_pop) %>% colnames()
+
