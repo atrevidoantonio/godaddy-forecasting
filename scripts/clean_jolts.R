@@ -83,9 +83,8 @@ jolts_df <- lapply(seq_along(urls), function(i) clean_jolts(urls[i], data = data
 #' merge together
 merged_jolts <- jolts_df[[1]]
 for (i in 2:length(jolts_df)) {
-  merged_jolts <- left_join(merged_jolts, jolts_df[[i]], by = c("date", "year", "state"))
+  merged_jolts <- left_join(merged_jolts, jolts_df[[i]], by = c("date", "year", "fips"))
 }
-
 #' convert thousands to full number
 merged_jolts <- mutate(merged_jolts, across(hires:discharges, ~ .x * 1000))
 #' state crosswalk to attach state name to fips codes
@@ -104,8 +103,44 @@ merged_jolts <-
   relocate(state, .after = year) %>%
   select(-fips) %>%
   mutate(date = lubridate::ym(date))
+#' state employment data to construct job destruction and creation rates
+bls_empl <- read_csv("./data/bls-state-empl.csv") %>%
+  pivot_longer(cols = 2:396, names_to = "date", values_to = "empl") %>%
+  # use a regular expression to clean up the date column 
+  mutate(date =  str_replace(date, "\n", " ")) %>%
+  janitor::clean_names() %>%
+  mutate(series_id = str_remove(series_id, "SMS")) %>%
+  transmute(fips = str_sub(series_id, 1, 2),
+            date,
+            empl)
+bls_empl <-
+  bls_empl %>%
+  group_by(fips) %>%
+  mutate(date = seq.Date(
+    from = as.Date("1990-01-01"),
+    to = as.Date("2022-11-01"),
+    by = "month"
+  )) %>%
+  ungroup() %>%
+  mutate(year = year(date)) %>%
+  relocate(date, year) %>%
+  left_join(state_crosswalk) %>%
+  relocate(state, .after = year) %>%
+  select(-fips)
+
+bls_empl <- mutate(bls_empl, empl = empl*1000)
+
+merged_jolts <-
+  left_join(merged_jolts, bls_empl) %>%
+  group_by(state, date) %>%
+  mutate(jcr = (hires + openings)/empl,
+         jdr = separations/empl,
+         gcr = 2 * min(hires, separations)/empl) %>%
+  mutate(ecr = discharges/separations*gcr,
+         qcr = quits/separations*gcr) %>%
+  ungroup()
 
 save_data(merged_jolts, path = "processed")
 
-rm(merged_jolts, jolts_df, urls, data_cols, state_crosswalk)
+rm(merged_jolts, bls_empl, jolts_df, urls, data_cols, state_crosswalk)
 gc()

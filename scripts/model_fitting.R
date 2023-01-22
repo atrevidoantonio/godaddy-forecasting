@@ -4,7 +4,6 @@ library(tidyverse)
 library(ggplot2)
 library(RColorBrewer)
 library(ggthemes)
-library(future)
 library(ggpubr)
 library(scales)
 library(tibbletime)
@@ -29,21 +28,26 @@ source("./scripts/forecast_helpers.R")
 ##### DATA #####
 train <- read_csv("./data/processed/enriched_train.csv")
 test <- read_csv("./data/test.csv")
-
+#' additional data
+covid_counties <- read_csv("./data/processed/covid_counties.csv")
+merged_jolts <- read_csv("./data/processed/merged_jolts.csv") %>% rename(sempl = empl)
+#' convert to tsibble
 train <-
   mutate(train, ym = yearmonth(date)) %>%
   as_tsibble(key = c(cfips, state, census_region), index = ym) %>%
   fill_gaps() %>%
   select(-row_id)
-
+#' impute missing activity data
 train <-
   train %>%
   group_by(cfips) %>%
   imputeTS::na_locf()
-
-#' join covid data
-train <- left_join(train, covid_counties) 
-
+#' #' join COVID data
+#' train <- left_join(train, covid_counties)
+#' join JOLTS data
+train <- left_join(train, merged_jolts) %>%
+  mutate(seekers = uneml*1000/openings)
+#' fill missing COVID data to zero
 train <- train %>%
   imputeTS::na_replace(0)
 

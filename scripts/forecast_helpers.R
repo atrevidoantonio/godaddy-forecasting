@@ -206,6 +206,3 @@ forecast_predictors <-
     }
     return(forecast_result)
   }
-
-predictors <- select(train_subset, active:cases_pop) %>% colnames()
-
