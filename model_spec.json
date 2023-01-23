@@ -1,0 +1,18 @@
+[
+  {
+    "name": "tslm",
+    "formula": "TSLM(activity ~ trend() + season(period = 12))"
+  },
+  {
+    "name": "ets",
+    "formula": "ETS(activity ~ trend() + season(period = 12, method = \"A\") + error(method = \"A\"))"
+  },
+  {
+    "name": "theta",
+    "formula": "THETA(activity ~ season(period  = 12))"
+  },
+  {
+    "name": "arima",
+    "formula": "ARIMA(activity)"
+  }
+]

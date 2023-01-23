@@ -1,0 +1,183 @@
+
+
+% Bibstyle aea.bst version 2009.05.20
+
+\begin{thebibliography}{xx}
+
+\harvarditem[Assimakopoulos \harvardand\ Nikolopoulos]{Vasillios Assimakopoulos
+  \harvardand\ Kostas Nikolopoulos}{2000}{assimakopoulos_2000}
+{\sc Assimakopoulos, Vasillios, and Kostas Nikolopoulos.} 2000. ``The Theta
+  Model: A Decomposition Approach to Forecasting.'' {\em International Journal
+  of Forecasting}, 16(4):~521--530. The M3- Competition.
+
+\harvarditem[Barrow \harvardand\ Kourentzes]{Devon~K. Barrow \harvardand\
+  Nikolaos Kourentzes}{2016}{barrow2016}
+{\sc Barrow, Devon~K., and Nikolaos Kourentzes.} 2016. ``Distributions of
+  forecasting Errors of Forecast Combinations: Implications for Inventory
+  Management.'' {\em International Journal of Production Economics},
+  177:~24--33.
+
+\harvarditem[Bates \harvardand\ Granger]{J.~M. Bates \harvardand\ C.~W.~J.
+  Granger}{1969}{bates_combination_1969}
+{\sc Bates, J.~M., and C.~W.~J. Granger.} 1969. ``The Combination of
+  Forecasts.'' {\em Operational Research Quarterly}, 20(4):~451.
+
+\harvarditem[Bergmeir, Hyndman \harvardand\ Benítez]{Christoph Bergmeir,
+  Rob~J. Hyndman \harvardand\ José~M. Benítez}{2016}{bergmeir_2016}
+{\sc Bergmeir, Christoph, Rob~J. Hyndman, and José~M. Benítez.} 2016.
+  ``Bagging Exponential Smoothing Methods Using STL Decomposition and Box–Cox
+  Transformation.'' {\em International Journal of Forecasting},
+  32(2):~303--312.
+
+\harvarditem[Clemen]{Robert~T. Clemen}{1989}{clemen89}
+{\sc Clemen, Robert~T.} 1989. ``Combining forecasts: A Review and Annotated
+  Bibliography.'' {\em International Journal of Forecasting}, 5(4):~559--583.
+
+\harvarditem[Clemen \harvardand\ Winkler]{Robert~T. Clemen \harvardand\
+  Robert~L. Winkler}{1986}{clemen86}
+{\sc Clemen, Robert~T., and Robert~L. Winkler.} 1986. ``Combining Economic
+  Forecasts.'' {\em Journal of Business \& Economic Statistics}, 4(1):~39--46.
+
+\harvarditem[Elliott \harvardand\ Timmermann]{Graham Elliott \harvardand\ Allan
+  Timmermann}{2008}{elliot_2008}
+{\sc Elliott, Graham, and Allan Timmermann.} 2008. ``Economic Forecasting.''
+  {\em Journal of Economic Literature}, 46(1):~3--56.
+
+\harvarditem[Elliott, Gargano \harvardand\ Timmermann]{Graham Elliott, Antonio
+  Gargano \harvardand\ Allan Timmermann}{2015}{elliott_complete_2015}
+{\sc Elliott, Graham, Antonio Gargano, and Allan Timmermann.} 2015. ``Complete
+  Subset Regressions with Large-Dimensional Sets of Predictors.'' {\em Journal
+  of Economic Dynamics and Control}, 54(1):~86--110.
+
+\harvarditem[Elliott, Granger \harvardand\ Timmermann]{Graham Elliott, C.~W.~J.
+  Granger \harvardand\ Allan Timmermann}{2013}{elliott_handbook_2013}
+{\sc Elliott, Graham, C.~W.~J. Granger, and Allan Timmermann, } ed. 2013. {\em
+  Handbook of Economic Forecasting.} {\em Handbooks in Economics}. 1st ed ed.,
+  Amsterdam; Boston:Elsevier North-Holland. OCLC: ocm70063087.
+
+\harvarditem[Gaglianone \harvardand\ Lima]{Wagner~Piazza Gaglianone
+  \harvardand\ Luiz~Renato Lima}{2014}{gaglianone2014}
+{\sc Gaglianone, Wagner~Piazza, and Luiz~Renato Lima.} 2014. ``Constructing
+  Optimal Density Forecasts from Point Forecast Combinations.'' {\em Journal of
+  Applied Econometrics}, 29(5):~736--757.
+
+\harvarditem[Granger \harvardand\ Ramanathan]{Clive W.~J. Granger \harvardand\
+  Ramu Ramanathan}{1984}{granger84}
+{\sc Granger, Clive W.~J., and Ramu Ramanathan.} 1984. ``Improved Methods of
+  Combining Forecasts.'' {\em Journal of Forecasting}, 3(2):~197--204.
+
+\harvarditem[Hyndman \harvardand\ Khandakar]{Rob~J. Hyndman \harvardand\
+  Yeasmin Khandakar}{2008}{hyndman2008}
+{\sc Hyndman, Rob~J., and Yeasmin Khandakar.} 2008. ``Automatic Time Series
+  Forecasting: The forecast Package for R.'' {\em Journal of Statistical
+  Software}, 27(3):~1--22.
+
+\harvarditem[Hyndman et~al.]{Rob~J. Hyndman, Anne~B. Koehler, Ralph~D Synder
+  \harvardand\ Simone Grose}{2002}{hyndman2002}
+{\sc Hyndman, Rob~J., Anne~B. Koehler, Ralph~D Synder, and Simone Grose.} 2002.
+  ``A State Space Framework for Automatic Forecasting Using Exponential
+  Smoothing Methods.'' {\em International Journal of Forecasting},
+  18(3):~439--454.
+
+\harvarditem[Kapetanios et~al.]{G. Kapetanios, J. Mitchell, S. Price
+  \harvardand\ N. Fawcett}{2015}{KAPETANIOS2015}
+{\sc Kapetanios, G., J. Mitchell, S. Price, and N. Fawcett.} 2015.
+  ``Generalised Density Forecast Combinations.'' {\em Journal of Econometrics},
+  188(1):~150--165.
+
+\harvarditem[Kourentzes, Barrow \harvardand\ Petropoulos]{Nikolaos Kourentzes,
+  Devon Barrow \harvardand\ Fotios Petropoulos}{2019}{kourentzes_another_2019}
+{\sc Kourentzes, Nikolaos, Devon Barrow, and Fotios Petropoulos.} 2019.
+  ``Another Look at Forecast Selection and Combination: {Evidence} from
+  Forecast Pooling.'' {\em International Journal of Production Economics},
+  209:~226--235.
+
+\harvarditem[Makridakis \harvardand\ Hibon]{Sypros Makridakis \harvardand\
+  Mich\`ele Hibon}{2000}{makridakis2000}
+{\sc Makridakis, Sypros, and Mich\`ele Hibon.} 2000. ``The M3 Competition:
+  Results, Conclusions and Implications.'' {\em International Journal of
+  Forecasting}, 16(4):~451--479.
+
+\harvarditem[Makridakis \harvardand\ Winkler]{Sypros Makridakis \harvardand\
+  Robert~L. Winkler}{1983}{makridakis83}
+{\sc Makridakis, Sypros, and Robert~L. Winkler.} 1983. ``The Combination of
+  Forecasts.'' {\em Management Science}, 29(9):~987--996.
+
+\harvarditem[Makridakis, Spiliotis \harvardand\ Assimakopoulos]{Sypros
+  Makridakis, Evangelos Spiliotis \harvardand\ Vassilios
+  Assimakopoulos}{2020}{makridakis2020}
+{\sc Makridakis, Sypros, Evangelos Spiliotis, and Vassilios Assimakopoulos.}
+  2020. ``The M4 Competition: 100,000 Time Series and 61 Forecasting Methods.''
+  {\em International Journal of Forecasting}, 36(1):~54--74.
+
+\harvarditem[Martin et~al.]{Gael~M. Martin, Rubén Loaiza-Maya, Worapree
+  Maneesoonthorn, David~T. Frazier \harvardand\ Andrés
+  Ramírez-Hassan}{2022}{martin2022}
+{\sc Martin, Gael~M., Rubén Loaiza-Maya, Worapree Maneesoonthorn, David~T.
+  Frazier, and Andrés Ramírez-Hassan.} 2022. ``Optimal Probabilistic
+  Forecasts: When do They Work?'' {\em International Journal of Forecasting},
+  38(1):~384--406.
+
+\harvarditem[Montero-Manso et~al.]{Pablo Montero-Manso, George Athanasopoulos,
+  Rob~J. Hyndman \harvardand\ Thiyanga~S. Talagala}{2020}{montero_2020}
+{\sc Montero-Manso, Pablo, George Athanasopoulos, Rob~J. Hyndman, and
+  Thiyanga~S. Talagala.} 2020. ``FFORMA: Feature-Based Forecast Model
+  Averaging.'' {\em International Journal of Forecasting}, 36(1):~86--92. M4
+  Competition.
+
+\harvarditem[Newbold \harvardand\ Granger]{P. Newbold \harvardand\ C.~W.~J.
+  Granger}{1974}{newbold74}
+{\sc Newbold, P., and C.~W.~J. Granger.} 1974. ``Experience with Forecasting
+  Univariate Time Series and the Combination of Forecasts.'' {\em Journal of
+  the Royal Statistical Society. Series A (General)}, 137(2):~131--165.
+
+\harvarditem[Petropoulos \harvardand\ Svetunkov]{Fotios Petropoulos
+  \harvardand\ Ivan Svetunkov}{2020}{petropoulos_simple_2020}
+{\sc Petropoulos, Fotios, and Ivan Svetunkov.} 2020. ``A Simple Combination of
+  Univariate Models.'' {\em International Journal of Forecasting},
+  36(1):~110--115.
+
+\harvarditem[Petropoulos, Hyndman \harvardand\ Bergmeir]{Fotios Petropoulos,
+  Rob~J. Hyndman \harvardand\ Christoph
+  Bergmeir}{2018}{petropoulos_exploring_2018}
+{\sc Petropoulos, Fotios, Rob~J. Hyndman, and Christoph Bergmeir.} 2018.
+  ``Exploring the Sources of Uncertainty: {Why} does Bagging for Time Series
+  Forecasting Work?'' {\em European Journal of Operational Research},
+  268(2):~545--554.
+
+\harvarditem[Ranjan \harvardand\ Gneiting]{Roopesh Ranjan \harvardand\ Tilmann
+  Gneiting}{2010}{ranjan2010}
+{\sc Ranjan, Roopesh, and Tilmann Gneiting.} 2010. ``Combining Probability
+  Forecasts.'' {\em Journal of the Royal Statistical Society}, 72(1):~72--91.
+
+\harvarditem[Smith \harvardand\ Wallis]{Jeremy Smith \harvardand\ Kenneth~F.
+  Wallis}{2009}{smith2009}
+{\sc Smith, Jeremy, and Kenneth~F. Wallis.} 2009. ``A Simple Explanation of the
+  Forecast Combination Puzzle.'' {\em Oxford Bulletin of Economics and
+  Statistics}, 71(3):~331--355.
+
+\harvarditem[Stock \harvardand\ Watson]{James Stock \harvardand\ Mark
+  Watson}{1998}{stock_comparison_1998}
+{\sc Stock, James, and Mark Watson.} 1998. ``A Comparison of Linear and
+  Nonlinear Univariate Models for Forecasting Macroeconomic Time Series.''
+  National Bureau of Economic Research w6607, Cambridge, MA.
+
+\harvarditem[Stock \harvardand\ Watson]{James~H. Stock \harvardand\ Mark~W.
+  Watson}{2004}{stock_combination_2004}
+{\sc Stock, James~H., and Mark~W. Watson.} 2004. ``Combination Forecasts of
+  Output Growth in a Seven-Country Data Set.'' {\em Journal of Forecasting},
+  23(6):~405--430.
+
+\harvarditem[Wang et~al.]{Xiaoqian Wang, Rob~J. Hyndman, Feng Li \harvardand\
+  Yanfei Kang}{2022}{WANG2022}
+{\sc Wang, Xiaoqian, Rob~J. Hyndman, Feng Li, and Yanfei Kang.} 2022.
+  ``Forecast combinations: An over 50-year review.'' {\em International Journal
+  of Forecasting}.
+
+\harvarditem[Winkler \harvardand\ Makridakis]{Robert~L. Winkler \harvardand\
+  Sypros Makridakis}{1983}{winkler83}
+{\sc Winkler, Robert~L., and Sypros Makridakis.} 1983. ``The Combination of
+  Forecasts.'' {\em Journal of the Royal Statistical Society},
+  146(2):~150--157.
+
+\end{thebibliography}
