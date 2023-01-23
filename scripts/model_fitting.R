@@ -75,10 +75,6 @@ train_sample <- filter(train, date <= "2022-07-01")
 test_sample <- filter(train, date > "2022-07-01") %>% select(cfips, activity)
 
 #' Model fitting
-#PCA
-xreg <- train %>% as_tibble() %>% select(activity:pct_it_workers)
-pca <- xreg %>% na.omit() %>% prcomp(xreg)
-
 #' Fable combination forecasting
 fit <- 
   progressr::with_progress(
@@ -155,11 +151,11 @@ model_tbl <-
   left_join(ground_truth) %>%
   mutate(model_type = "Training")
 
-nnetar_fit <- train %>%
-  model(nnetar = NNETAR(activity))
-
+nnetar_fit <-
+  progressr::with_progress(train %>%
+                             model(nnetar = NNETAR(activity)))
 arima_fit <- train %>%
-  model(arima = ARIMA(activity ~ pdq(0, 1, 0) ~ PDQ(0, 1, 0, period = 12)))
+  model(arima = ARIMA(activity ~ PDQ(0, 1, 0, period = 12), stepwise = FALSE))
 
 #' produce point forecasts
 fcts <-
@@ -253,13 +249,14 @@ submission <-
             microbusiness_density)
 
 nnetar_fcts <-
+  progressr::with_progress(
   nnetar_fit %>%
   forecast(h = dmonths) %>%
   as_tibble() %>%
   transmute(
     row_id = paste(cfips, lubridate::ym(ym), sep = "_"),
     microbusiness_density = .mean)
-
+  )
 theta_fcts <-
   fcts %>%
   as_tibble() %>%

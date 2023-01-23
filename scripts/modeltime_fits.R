@@ -17,7 +17,8 @@ parallel_start(sc, .method = "spark")
 train <- read_csv("./data/processed/enriched_train.csv") %>%
   mutate(month_label = month(date, label = TRUE),
          year = year(date))
-test <- read_csv("./data/test.csv")
+test <- read_csv("./data/test.csv") %>%
+  transmute(row_id, cfips, date = ymd(first_day_of_month))
 #' additional data
 merged_jolts <- read_csv("./data/processed/merged_jolts.csv") %>% rename(sempl = empl)
 #' convert to tsibble
@@ -75,6 +76,39 @@ train_end <- max(train$date)
 test_end <- max(ymd(test$first_day_of_month))
 dmonths <- floor(as.numeric(difftime(test_end, train_end, units = "weeks")) / 4)
 
+#' Explanatory variables (Feature engineering for ML models)
+train_subset <- train_subset %>% 
+  group_by(cfips) %>%
+  mutate(
+    mbd_lag_1 = lag(activity),
+    mbd_lag_2 = lag(activity, n = 2L),
+    mbd_lag_3 = lag(activity, n = 3L),
+    act_lag_1 = active - lag(active),
+    act_lag_2 = active - lag(active, n = 2L),
+    act_lag_3 = active - lag(active, n = 3L),
+    mbd_rollmean2 = zoo::rollsum(mbd_lag_1, 2, fill = NA),
+    mbd_rollmean4 = zoo::rollsum(mbd_lag_1, 4, fill = NA),
+    mbd_rollmean6 = zoo::rollsum(mbd_lag_1, 6, fill = NA),
+    mbd_rollmean12 = zoo::rollsum(mbd_lag_1, 12, fill = NA)
+  ) %>%
+  ungroup()
+
+features <-
+  c(
+    "state_dummy",
+    "mbd_lag_1",
+    "mbd_lag_2",
+    "mbd_lag_3",
+    "act_lag_1",
+    "act_lag_2",
+    "act_lag_3" ,
+    "mbd_rollmean2",
+    "mbd_rollmean4",
+    "mbd_rollmean6",
+    "mbd_rollmean12"
+  )  
+
+
 #' modeltime workflow for fitting ARIMA and ARIMA with XGBOOST errors
 nested_data_tbl <- train_subset %>%
   # 1. Extending: forecast 8 months
@@ -101,14 +135,13 @@ nested_data_tbl <- train_subset %>%
 #' ARIMA and Boosted ARIMA
 rec <-
   recipe(
-    activity ~ date + trend + pct_college + pct_bb + income_per_capita,
+    activity ~ date,
     extract_nested_train_split(nested_data_tbl)
-  ) %>%
-  step_log(income_per_capita)
-#' Boosted ARIMAX
+  )
+#' Boosted ARIMA
 boosted_rec <-
   recipe(
-    activity ~ date + pct_college + pct_bb,
+    activity ~ date  + trend + month_label,
     extract_nested_train_split(nested_data_tbl)
   )
 #' XGBoost
@@ -117,6 +150,8 @@ rec_xgb <- recipe(activity ~ ., extract_nested_train_split(nested_data_tbl)) %>%
   step_zv(all_predictors()) %>%
   step_dummy(all_nominal_predictors(), one_hot = TRUE)
 
+#' XGBoost model needs refinement,
+#' some counties are not inexplicably dropped from the forecast at the end
 wflw_xgb <- workflow() %>%
   add_model(
     boost_tree("regression") %>% set_engine(
@@ -139,18 +174,14 @@ wflw_arima <- workflow() %>%
   add_model(
     arima_boost(
       seasonal_period = 12,
-      min_n = 1,
       tree_depth = 3,
-      learn_rate = 0.1,
-      sample_size = 0.5
+      learn_rate = 0.1
     ) %>%
       set_engine(
         engine = "auto_arima_xgboost",
         nrounds = 5000,
         max_depth = 3,
-        early_stopping_rounds = 50,
-        colsample_bytree = 0.50,
-        counts = FALSE
+        early_stopping_rounds = 50
       )
   ) %>%
   add_recipe(boosted_rec)
@@ -162,26 +193,49 @@ wflw_prophet <- workflow() %>%
   ) %>%
   add_recipe(rec)
 
-mars_fit <- mars(mode = "regression") %>%
-  set_engine("earth")
 
-mars_rec <-
-  recipe(
-    activity ~ date + trend + month_label + pct_college + pct_bb + income_per_capita,
-    extract_nested_train_split(nested_data_tbl)
-  ) %>%
-  step_normalize(trend) %>%
-  step_rm(date)
+ardl_fit <- auto_ardl(activity ~ active + discharges + pct_college + pct_bb, max_order = 5, data = wa_subset)
 
-wflw_mars <- workflow() %>%
-  add_model(mars_fit) %>%
-  add_recipe(mars_rec)
+nested_df <- train_subset %>%
+  group_by(cfips) %>%
+  nest()
+
+# ---- AUTO ADAM ----
+# Model Spec
+model_spec <- adam_reg() %>%
+  set_engine("auto_adam")
+d
+
+fit_adam <- function(tsdata, prop = 0.9, h = 8, forecast = TRUE) {
+  splits <-
+    initial_time_split(tsdata, prop = prop, cumulative = TRUE)
+  adam_fit <- model_spec %>%
+    fit(activity ~ date, data = training(splits)) %>%
+    modeltime_table() %>%
+    modeltime_calibrate(new_data = testing(splits))
+  if (forecast) {
+    adam_fcts <- modeltime_refit(adam_fit, data = tsdata) %>%
+      modeltime_forecast(h = h,
+                         actual_data = tsdata)
+    return(adam_fcts)
+  }
+}
+
+# adam_fcts <- lapply(nested_df, fit_adam)
+# plyr::ldply(adam_fcts, as_tibble)
+
+nested_df <- nested_df %>%
+  mutate(forecast = map(data, ~fit_adam(.x, forecast = TRUE)))
+
+unnest(nested_df, c(cfips, forecast))
+
+
 
 nested_modeltime_tbl <- modeltime_nested_fit(
   # Nested data 
   nested_data = nested_data_tbl,
   # Add workflows
-  wflw_arima
+  wflw_adam
 )
 
 nested_modeltime_tbl %>%
@@ -192,7 +246,7 @@ nested_modeltime_tbl %>%
 
 nested_modeltime_refit_tbl <- nested_modeltime_tbl %>%
   modeltime_nested_refit(
-    control = control_nested_refit(verbose = TRUE)
+    control = control_nested_refit()
   )
 
 modeltime_fcts <-
@@ -202,15 +256,11 @@ modeltime_fcts <-
 arima_fcts <-
   filter(modeltime_fcts, .key == "prediction")
 
+
 # xgboost_fcts <-
 #   filter(modeltime_fcts, .model_desc == "XGBOOST", .key == "prediction") %>%
 #   group_by(cfips) %>%
 #   count()
-
-# county_fcts <- left_join(counties, xgboost_fcts) %>%
-#   filter(is.na(n)) %>%
-#   select(-n) %>%
-#   left_join(nested_modeltime_tbl)
 
 arima_boost <-
   arima_fcts %>%
@@ -218,8 +268,6 @@ arima_boost <-
     row_id = paste(cfips, lubridate::ymd(.index), sep = "_"),
     microbusiness_density = .value
   )
-
-filter(modeltime_fcts, .model_desc == "ARIMA W XGBOOST ERRORS", .key == "prediction")
 
 save_data(arima_boost, path = "output")
 spark_disconnect(sc)
