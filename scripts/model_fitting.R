@@ -31,17 +31,6 @@ test <- read_csv("./data/test.csv")
 #' additional data
 covid_counties <- read_csv("./data/processed/covid_counties.csv")
 merged_jolts <- read_csv("./data/processed/merged_jolts.csv") %>% rename(sempl = empl)
-#' convert to tsibble
-train <-
-  mutate(train, ym = yearmonth(date)) %>%
-  as_tsibble(key = c(cfips, state, census_region), index = ym) %>%
-  fill_gaps() %>%
-  select(-row_id)
-#' impute missing activity data
-train <-
-  train %>%
-  group_by(cfips) %>%
-  imputeTS::na_locf()
 #' #' join COVID data
 #' train <- left_join(train, covid_counties)
 #' join JOLTS data
@@ -51,34 +40,63 @@ train <- left_join(train, merged_jolts) %>%
 train <- train %>%
   imputeTS::na_replace(0)
 
+smape <-
+  function(actual, forecast) {
+    return(1 / length(actual) * sum(2 * abs(forecast - actual) / (abs(actual) + abs(forecast)), na.rm = TRUE))
+  }
+
 train_end <- max(train$date)
 test_end <- max(ymd(test$first_day_of_month))
 dmonths <-  floor(as.numeric(difftime(test_end, train_end, units = "weeks"))/4)
 
-
 counties <- distinct(train, cfips, county, state, census_region)
 ground_truth <- select(train, cfips, activity)
 
+#' convert to tsibble
+train <-
+  mutate(train, ym = yearmonth(date)) %>%
+  as_tsibble(key = c(cfips, county, state, census_region), index = ym) %>%
+  fill_gaps() %>%
+  select(-row_id)
+
+train <-
+  mutate(train, ym = yearmonth(date)) %>%
+  as_tsibble(key = c(cfips, county, state, census_region), index = ym)
+
+#' impute missing activity data
+train <-
+  train %>%
+  group_by(cfips) %>%
+  imputeTS::na_locf()
 ##### Feature Engineering ####
-
-#' create lags for activity
-
-
-train_hts <- train %>%
-  aggregate_key((cfips * state) * census_region, active = sum(active)) %>%
-  filter(!is_aggregated(census_region))
 
 plan(multisession)
 
 #' break up training data to observe accuracy
-train_sample <- filter(train, date <= "2022-07-01")
-test_sample <- filter(train, date > "2022-07-01") %>% select(cfips, activity)
+train_sample <- filter(train, date <= "2022-07-01") %>%
+  select(date,
+         ym,
+         cfips,
+         county,
+         state,
+         census_region,
+         activity,
+         active,
+         population)
+
+train_sample <- mutate(train_sample, ym = yearmonth(date)) %>%
+  as_tsibble(key = c(cfips, county, state, census_region), index = ym)
+
+test_sample <- filter(train, date >= "2022-08-01") %>%
+  select(date, cfips, county, state, census_region, activity, active, population) %>%
+  mutate(ym = yearmonth(date)) %>%
+  as_tsibble(key = c(cfips, county, state, census_region), index = ym)
 
 #' Model fitting
 #' Fable combination forecasting
 fit <- 
   progressr::with_progress(
-  train_sample %>%
+  train %>%
   model(
     nmean = MEAN(activity),
     theta = THETA(activity),
@@ -89,10 +107,14 @@ fit <-
     )
   )
 
-test_fits <- fit %>% fabletools::forecast(h = 3) %>%
-  as_tibble() %>%
-  mutate(model_type = "Forecast") %>%
-  select(cfips, state, census_region, .model, ym, .fitted = .mean, model_type)
+arima_fit <- 
+  progressr::with_progress(
+     train %>%
+      model(
+        arima = ARIMA(activity, stepwise = FALSE, approximation = FALSE)
+      )
+  )
+
 
 model_fits <-
   fit %>%
@@ -151,11 +173,14 @@ model_tbl <-
   left_join(ground_truth) %>%
   mutate(model_type = "Training")
 
+
+theta_fit <-
+  progressr::with_progress( %>%
+                             model(nnetar = THETA(activity)))
+
 nnetar_fit <-
   progressr::with_progress(train %>%
                              model(nnetar = NNETAR(activity)))
-arima_fit <- train %>%
-  model(arima = ARIMA(activity ~ PDQ(0, 1, 0, period = 12), stepwise = FALSE))
 
 #' produce point forecasts
 fcts <-
@@ -279,4 +304,4 @@ save_model(ets_fit)
 save_model(tslm_fit)
 save_model(theta_fit)
 save_model(arima_fit)
-save_model(comb_fct)
+save_model(comb_fct)d

@@ -256,15 +256,15 @@ gc()
 
 #### Plots ######
 
-plot_kde <- function(data, x, log_scale = FALSE, group = TRUE, percent = FALSE) {
+plot_kde <- function(data, x_var, log_scale = FALSE, group = TRUE, percent = FALSE) {
   # Set the x-axis label based on the x variable
   x_labels <- c(activity = "Mircobusiness activity (per 100)",
                 active = "Active Microbusinesses",
                 share = "Mircobusiness activity (share of state total)")
   x_label <- x_labels[x_var]
-  p <- ggplot(data, aes(x = !!sym(x_var))) + theme_clean() + labs(x = x_label, y = "Density\n")
+  p <- ggplot(data, aes(x = x_var)) + theme_clean() + labs(x = x_label, y = "Density\n")
   if (group) {
-    p <- ggplot(data, aes(x = x, linetype = as.factor(year))) +
+    p <- ggplot(data, aes(x = x_var, linetype = as.factor(year))) +
       stat_density(geom = "line",
                    position = "identity",
                    color = "black") +
@@ -287,7 +287,7 @@ plot_kde <- function(data, x, log_scale = FALSE, group = TRUE, percent = FALSE) 
 }
 #' kernel density estimation
 
-plot_kde(train, x = train$active, group = TRUE, log_scale = TRUE)
+plot_kde(train, train$active, group = TRUE, log_scale = TRUE)
 plot_kde(train, train$activity, log_scale = TRUE)
 plot_kde(train, train$share, percent = TRUE)
 
@@ -298,7 +298,7 @@ ggplot(train, aes(x = active, linetype = as.factor(year), color = as.factor(year
   scale_y_continuous(guide = "axis_minor") +
   theme_clean() +
   guides(color = "none") +
-  scale_color_manual(values = c(onyx, rhythm, gainsboro, metallic)) +
+#  scale_color_manual(values = c(onyx, rhythm, gainsboro, metallic)) +
   # guides(color = "none", linetype = guide_legend(
   # override.aes = list(color = c(sapphire, rainy_day, persian_orange, eton)))) +
   # scale_color_manual(values = c(sapphire, rainy_day, persian_orange, eton)) +
@@ -326,13 +326,42 @@ ggplot(train, aes(x = activity, linetype = as.factor(year), color = as.factor(ye
   scale_y_continuous(guide = "axis_minor") +
   theme_clean() +
   guides(color = "none") +
-  scale_color_manual(values = c(onyx, rhythm, gainsboro, metallic)) +
+#  scale_color_manual(values = c(onyx, rhythm, gainsboro, metallic)) +
   labs(x = "\nMircobusiness activity (count active firms)", y = "Density\n", linetype = "") +
   facet_wrap(~census_region)
 
+summary <-
+  train %>%
+  as_tibble() %>%
+  group_by(cfips, census_region, state) %>%
+  summarize(
+    unem = mean(unem, na.rm = TRUE),
+    population = max(population),
+    activity = mean(activity),
+    active = round(mean(active))
+  ) %>%
+  ungroup()
+
+ggplot(summary, aes(x = active, y = activity, size = population, group = census_region)) +
+  geom_jitter(color = sapphire) +
+  scale_size_continuous(
+    range = c(1, 5),
+    labels = comma_format(),
+    breaks = c(1e5, 1e6, 25e5, 5e6)
+  ) +
+  scale_x_log10(labels = comma_format()) +
+  scale_y_log10() +
+  guides(size = guide_legend(
+    override.aes = list(color = sapphire, linetype = NA),
+    nrow = 2
+  )) +
+  theme_clean() +
+  facet_wrap(~ census_region, scales = "free")
+
 ggplot(
   train %>%
-    group_by(cfips, census_region, year) %>%
+    as_tibble() %>%
+    group_by(cfips, census_region) %>%
     summarize(
       unem = mean(unem, na.rm = TRUE),
       population = max(population),
@@ -365,7 +394,8 @@ ggplot(
 
 ggplot(
   train %>%
-    group_by(cfips, census_region, year) %>%
+    as_tibble() %>%
+    group_by(cfips, census_region) %>%
     summarize(
       income = mean(income_per_capita, na.rm = TRUE),
       population = max(population),
@@ -398,7 +428,8 @@ ggplot(
 
 ggplot(
   train %>%
-    group_by(cfips, census_region, year) %>%
+    as_tibble() %>%
+    group_by(cfips, census_region) %>%
     summarize(
       manufacturing = mean(manufacturing / total_employment, na.rm = TRUE),
       population = max(population),
@@ -464,7 +495,8 @@ ggplot(
 
 ggplot(
   train %>%
-    group_by(cfips, census_region, year) %>%
+    as_tibble() %>%
+    group_by(cfips, census_region) %>%
     summarize(
       for_born = mean(pct_foreign_born, na.rm = TRUE),
       population = max(population),
@@ -498,7 +530,8 @@ ggplot(
 
 ggplot(
   train %>%
-    group_by(cfips, census_region, year) %>%
+    as_tibble() %>%
+    group_by(cfips, census_region) %>%
     summarize(
       pct_bb = mean(pct_bb, na.rm = TRUE),
       population = max(population),
@@ -531,7 +564,8 @@ ggplot(
 
 ggplot(
   train %>%
-    group_by(cfips, census_region, year) %>%
+    as_tibble() %>%
+    group_by(cfips, census_region) %>%
     summarize(
       median_hh_inc = mean(median_hh_inc, na.rm = TRUE),
       population = max(population),

@@ -108,7 +108,6 @@ features <-
     "mbd_rollmean12"
   )  
 
-
 #' modeltime workflow for fitting ARIMA and ARIMA with XGBOOST errors
 nested_data_tbl <- train_subset %>%
   # 1. Extending: forecast 8 months
@@ -141,7 +140,7 @@ rec <-
 #' Boosted ARIMA
 boosted_rec <-
   recipe(
-    activity ~ date  + trend + month_label,
+    activity ~ date  + month_label,
     extract_nested_train_split(nested_data_tbl)
   )
 #' XGBoost
@@ -166,7 +165,7 @@ wflw_xgb <- workflow() %>%
       nrounds = 5000,
       early_stopping_rounds = 50,
       tree_method  = "hist"
-      )
+    )
   ) %>%
   add_recipe(rec_xgb)
 
@@ -227,9 +226,9 @@ fit_adam <- function(tsdata, prop = 0.9, h = 8, forecast = TRUE) {
 nested_df <- nested_df %>%
   mutate(forecast = map(data, ~fit_adam(.x, forecast = TRUE)))
 
-unnest(nested_df, c(cfips, forecast))
-
-
+adam_fcts <-
+  unnest(nested_df, c(cfips, forecast)) %>%
+  select(cfips, date = .index, .model_desc, .value)
 
 nested_modeltime_tbl <- modeltime_nested_fit(
   # Nested data 
@@ -255,7 +254,6 @@ modeltime_fcts <-
 
 arima_fcts <-
   filter(modeltime_fcts, .key == "prediction")
-
 
 # xgboost_fcts <-
 #   filter(modeltime_fcts, .model_desc == "XGBOOST", .key == "prediction") %>%
